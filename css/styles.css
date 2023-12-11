@@ -132,7 +132,7 @@ footer{
 
 a.expandlink:hover {
   color: #ffffff;
-  letter-spacing: 0.3em;
+  letter-spacing: 0.2em;
 }
 
 
@@ -148,7 +148,7 @@ a.expandlink:hover {
   background-color: #00000032;
   border-radius: 50px;
   text-transform: uppercase;
-  margin: 1em;
+  margin: 0.5em;
 
 
 }
@@ -170,7 +170,7 @@ a.expandlink:hover {
 
 
 
-@media screen and (max-width: 830px) {
+@media screen and (max-width: 840px) {
   .sociallinks li {
     color: rgb(255, 255, 255);
     text-align: center;
@@ -189,7 +189,7 @@ a.expandlink:hover {
 }
 
 
-@media screen and (max-width: 830px) {
+@media screen and (max-width: 840px) {
   .sociallinks {
     display: block;
     align-items: center;

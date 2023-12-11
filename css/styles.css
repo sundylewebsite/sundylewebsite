@@ -170,7 +170,7 @@ a.expandlink:hover {
 
 
 
-@media screen and (max-width: 840px) {
+@media screen and (max-width: 830px) {
   .sociallinks li {
     color: rgb(255, 255, 255);
     text-align: center;
@@ -189,7 +189,7 @@ a.expandlink:hover {
 }
 
 
-@media screen and (max-width: 840px) {
+@media screen and (max-width: 830px) {
   .sociallinks {
     display: block;
     align-items: center;

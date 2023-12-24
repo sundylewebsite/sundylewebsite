@@ -188,6 +188,15 @@ a.expandlink:hover {
 
 }
 
+
+.specialborder1{
+  background: linear-gradient(to right, rgb(220, 0, 0), rgb(255, 170, 0));
+
+}
+
+
+
+
 .sociallinks a {
   margin-left: 20px;
   margin-right: 20px;
@@ -200,7 +209,7 @@ a.expandlink:hover {
   display: flex;
   align-items: center;
   justify-content: center;
-  margin-bottom: 3em;
+
 }
 
 

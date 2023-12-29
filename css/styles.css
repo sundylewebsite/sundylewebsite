@@ -840,3 +840,9 @@ a.expandlink:hover {
   font-weight: bold;
   cursor: pointer;
 }
+
+
+iframe.youtubevideo {
+  aspect-ratio: 16/9;
+  width: 100%;
+}

@@ -323,8 +323,9 @@ a.card:hover, a.card:focus-visible { text-decoration: none; transform: translate
   display: grid; grid-template-columns: 132px minmax(0, 1fr) auto; gap: 1.2rem;
   align-items: center; padding: 1.3rem 1rem; border-bottom: 1px solid var(--line);
   text-decoration: none; color: inherit; border-radius: var(--radius-sm);
+  position: relative;
 }
-a.show:hover, a.show:focus-visible {
+.show:hover, .show:focus-within {
   background: var(--card); text-decoration: none; box-shadow: var(--shadow-sm);
 }
 .show__date { font-family: var(--display); font-size: 1.05rem; color: var(--amber-2); }
@@ -335,9 +336,27 @@ a.show:hover, a.show:focus-visible {
 }
 .show__main { display: block; min-width: 0; }
 .show__title { display: block; font-family: var(--display); font-size: 1.25rem; line-height: 1.2; margin: 0 0 .2rem; }
-.show__location { display: block; font-size: .92rem; color: var(--ink-2); margin: 0; }
+.show__location {
+  display: block; font-size: .92rem; color: var(--ink-2); margin: 0;
+  width: fit-content; position: relative; z-index: 2;
+}
+/* dotted underline rather than a border, so the padding below can enlarge the tap
+   target on a phone without pushing the underline away from the text */
+a.show__location {
+  text-decoration: underline dotted;
+  text-decoration-color: var(--line-2);
+  text-decoration-thickness: 1px;
+  text-underline-offset: 4px;
+  padding: .4rem 0;
+  margin-top: -.4rem;
+}
+a.show__location:hover, a.show__location:focus-visible {
+  color: var(--amber-2); text-decoration-color: var(--amber); text-decoration-thickness: 2px;
+}
 .show__note { display: block; font-size: .82rem; color: var(--ink-3); margin: .25rem 0 0; }
 .show__cta { white-space: nowrap; }
+/* the whole row is clickable through the Tickets button; the address sits above it */
+.show__cta::after { content: ""; position: absolute; inset: 0; border-radius: var(--radius-sm); }
 @media (max-width: 760px) {
   .show { grid-template-columns: 1fr auto; gap: .5rem 1rem; }
   .show__date { grid-column: 1; }

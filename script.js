@@ -119,29 +119,45 @@
   }
   function showRow(s, isPast) {
     var d = fmtDate(s.date);
-    /* Main line = the event title. Sub heading = the address, minus any part the
-       title already says so the venue is never printed twice. The time sits in
-       the date column next to the day. */
+    /* Main line = the event title. Sub heading = the street address only — the
+       venue name is nearly always in the title already. The time sits in the
+       date column next to the day. */
     var title = s.title || s.venue || "TBA";
-    var t = String(title).toLowerCase();
-    var address = [s.venue, s.street, s.city].filter(function (p) {
-      return p && t.indexOf(String(p).toLowerCase()) === -1;
-    }).join(", ");
+    var street = String(s.street || "");
+    var city = String(s.city || "");
+    var shown = [street, city].filter(Boolean).join(", ");
+
+    /* The link points at every part we know (venue included) so Maps can find the
+       building, while the visible text stays just the street address. */
+    var whereHtml = "";
+    if (shown) {
+      if (street) {
+        var query = [s.venue, street, city].filter(Boolean).join(", ");
+        whereHtml = '<a class="show__location" href="https://www.google.com/maps/dir/?api=1&destination=' +
+          encodeURIComponent(query) + '" target="_blank" rel="noopener" ' +
+          'aria-label="Directions to ' + esc(shown) + ' in Google Maps">' + esc(shown) + "</a>";
+      } else {
+        whereHtml = '<span class="show__location">' + esc(shown) + "</span>";
+      }
+    }
+
     var inner =
       '<span class="show__date">' + esc(d.main) +
         (s.time ? '<span class="show__time">' + esc(s.time) + "</span>" : "") +
       "</span>" +
       '<span class="show__main">' +
         '<span class="show__title">' + esc(title) + "</span>" +
-        (address ? '<span class="show__location">' + esc(address) + "</span>" : "") +
+        whereHtml +
         (s.note ? '<span class="show__note">' + esc(s.note) + "</span>" : "") +
       "</span>";
+    /* Past shows have nothing to tap. For an upcoming show with tickets the whole
+       row is clickable via the stretched link on the Tickets button, with the
+       address layered above it — never a nested <a>. */
     var cta = (!isPast && s.tickets)
-      ? '<span class="show__cta btn btn--primary btn--sm">Tickets</span>'
+      ? '<a class="show__cta btn btn--primary btn--sm" href="' + esc(s.tickets) +
+        '" target="_blank" rel="noopener">Tickets</a>'
       : "";
-    var tag = (!isPast && s.tickets) ? "a" : "div";
-    var href = (!isPast && s.tickets) ? ' href="' + esc(s.tickets) + '" target="_blank" rel="noopener"' : "";
-    return "<li><" + tag + ' class="show"' + href + ">" + inner + cta + "</" + tag + "></li>";
+    return "<li><div class=\"show\">" + inner + cta + "</div></li>";
   }
 
   /* -------------------------------------------------------------- calendar ---

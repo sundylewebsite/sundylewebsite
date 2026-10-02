@@ -234,6 +234,32 @@ drop files in `assets/photos/members/` and follow the comment in `index.html`.
 badge and put its art in the hero. Videos take the YouTube id from the video's
 URL (`youtube.com/watch?v=` **this part**).
 
+## Light & dark mode
+
+The site follows the system setting — no toggle to click, nothing stored. Every
+colour is a token at the top of `styles.css`, and the whole theme is that token
+block defined twice:
+
+```
+:root                                  the light theme
+@media (prefers-color-scheme: dark)    the dark theme
+```
+
+Change a value in one block and only that theme moves. A few tokens exist purely
+to keep the two honest:
+
+| token | why |
+|---|---|
+| `--deep`, `--deep-ink` | surfaces that stay dark in both themes (hero, footer, video cards, lightbox) — kept apart from `--ink` so inverting the text can't turn the footer white |
+| `--btn-bg`, `--btn-ink` | the one button that inverts: dark fill on light, light fill on dark, so it's always the strongest thing on the page |
+| `--nav-bg`, `--ghost-bg`, `--hairline` | the translucent bits that have to flip with the background |
+| `--amber-2` | amber when used as *text* — darker than the paper in light mode, lighter than it in dark |
+
+Two things live outside the stylesheet: the Bandcamp player is styled by URL, so
+`script.js` passes it `bgcol`/`linkcol` per theme (and re-loads it if the system
+theme changes while the page is open), and `theme-color` in `index.html` is
+declared once per theme so the browser chrome matches on a phone.
+
 ## Changing colours or type
 
 `styles.css`, top of the file. The palette comes straight off the *Typhoon*

@@ -15,22 +15,42 @@
 }
 
 :root {
+  /* Which way round the browser should render form controls, scrollbars, etc.
+     The two blocks below — this one and the prefers-color-scheme one at the
+     bottom of the colour section — are the whole theme. */
+  color-scheme: light;
+
   /* colour */
   --paper:      #fbfaf7;
   --paper-2:    #f4f1ea;
   --paper-3:    #ece7dd;
   --card:       #ffffff;
-  --ink:        #14110f;
-  --ink-2:      #4c453e;
-  --ink-3:      #857b71;
+  --ink:        #14110f;   /* primary text */
+  --ink-2:      #4c453e;   /* secondary text */
+  --ink-3:      #857b71;   /* captions, meta */
   --line:       #e3ded3;
   --line-2:     #d3ccbe;
   --amber:      #e0621f;
-  --amber-2:    #b74a12;
+  --amber-2:    #b74a12;   /* amber as *text* — needs to be darker on paper */
   --sun:        #f0a81e;
   --teal:       #2e8b84;
   --violet:     #8a6ba8;
   --coral:      #d9534f;
+
+  /* Surfaces that stay dark in both themes — the hero, the footer, the video
+     cards, the lightbox. Kept separate from --ink so dark mode can invert the
+     text without turning the footer white. */
+  --deep:       #14110f;
+  --deep-ink:   #ffffff;
+  --nav-bg:     rgba(251, 250, 247, .82);
+  --ghost-bg:   rgba(255, 255, 255, .6);
+  --ghost-bg-h: #ffffff;
+  --hairline:   rgba(20, 17, 15, .10);
+  --play-ink:   #14110f;
+  /* The one button that inverts between themes: dark fill on light, light fill
+     on dark, so it is always the strongest thing on the page. */
+  --btn-bg:     #14110f;
+  --btn-ink:    #ffffff;
 
   /* type */
   --display: "HMCamino", "Avenir Next", "Segoe UI", system-ui, sans-serif;
@@ -47,6 +67,46 @@
   --shadow:    0 2px 6px rgba(20, 17, 15, .07), 0 18px 40px rgba(20, 17, 15, .10);
   --shadow-lg: 0 30px 70px rgba(20, 17, 15, .22);
   --ease: cubic-bezier(.22, .61, .36, 1);
+}
+
+/* ---------------------------------------------------------------- dark ---
+   Follows the system setting — no toggle, nothing to store. Everything above
+   is a token, so only the tokens change here. Warm near-blacks rather than
+   grey, to sit with the hand-drawn artwork. */
+@media (prefers-color-scheme: dark) {
+  :root {
+    color-scheme: dark;
+
+    --paper:      #14110d;
+    --paper-2:    #1a1611;
+    --paper-3:    #241f18;
+    --card:       #1c1813;
+    --ink:        #f7f2e9;
+    --ink-2:      #cec5b7;
+    --ink-3:      #a2988a;
+    --line:       #2f2820;
+    --line-2:     #443b30;
+    --amber:      #e8702a;
+    --amber-2:    #ff9d55;   /* has to be *lighter* than paper this way round */
+    --sun:        #f4b03a;
+    --teal:       #4fb3a9;
+    --violet:     #ab8cca;
+    --coral:      #e8736e;
+
+    --deep:       #0d0b09;   /* hero + footer sit a shade below the page */
+    --deep-ink:   #fbf8f3;
+    --nav-bg:     rgba(20, 17, 13, .82);
+    --ghost-bg:   rgba(255, 255, 255, .05);
+    --ghost-bg-h: rgba(255, 255, 255, .12);
+    --hairline:   rgba(255, 255, 255, .09);
+    --play-ink:   #14110f;   /* the play triangle on its white circle */
+    --btn-bg:     #f7f2e9;
+    --btn-ink:    #14110d;
+
+    --shadow-sm: 0 1px 2px rgba(0, 0, 0, .5), 0 4px 14px rgba(0, 0, 0, .35);
+    --shadow:    0 2px 6px rgba(0, 0, 0, .5), 0 18px 40px rgba(0, 0, 0, .45);
+    --shadow-lg: 0 30px 70px rgba(0, 0, 0, .65);
+  }
 }
 
 /* --------------------------------------------------------------- reset --- */
@@ -92,7 +152,7 @@ hr { border: 0; border-top: 1px solid var(--line); margin: 0; }
 .section--line { border-top: 1px solid var(--line); }
 .skip-link {
   position: absolute; left: -9999px; top: 0; z-index: 200;
-  background: var(--ink); color: #fff; padding: .7rem 1.1rem; border-radius: 0 0 var(--radius-sm) 0;
+  background: var(--deep); color: var(--deep-ink); padding: .7rem 1.1rem; border-radius: 0 0 var(--radius-sm) 0;
 }
 .skip-link:focus { left: 0; }
 .sr-only {
@@ -112,7 +172,7 @@ hr { border: 0; border-top: 1px solid var(--line); margin: 0; }
 /* --------------------------------------------------------------- nav --- */
 .nav {
   position: sticky; top: 0; z-index: 100;
-  background: rgba(251, 250, 247, .82);
+  background: var(--nav-bg);
   backdrop-filter: saturate(180%) blur(14px);
   -webkit-backdrop-filter: saturate(180%) blur(14px);
   border-bottom: 1px solid transparent;
@@ -149,14 +209,14 @@ hr { border: 0; border-top: 1px solid var(--line); margin: 0; }
 }
 .btn:hover { text-decoration: none; transform: translateY(-1px); }
 .btn:active { transform: translateY(0); }
-.btn--primary { background: var(--ink); color: #fff; box-shadow: var(--shadow-sm); }
-.btn--primary:hover { background: #000; box-shadow: var(--shadow); color: #fff; }
+.btn--primary { background: var(--btn-bg); color: var(--btn-ink); box-shadow: var(--shadow-sm); }
+.btn--primary:hover { box-shadow: var(--shadow); color: var(--btn-ink); }
 .btn--amber { background: var(--amber); color: #fff; box-shadow: var(--shadow-sm); }
 .btn--amber:hover { background: var(--amber-2); box-shadow: var(--shadow); color: #fff; }
-.btn--ghost { border-color: var(--line-2); color: var(--ink); background: rgba(255,255,255,.6); }
-.btn--ghost:hover { border-color: var(--ink); background: #fff; color: var(--ink); }
+.btn--ghost { border-color: var(--line-2); color: var(--ink); background: var(--ghost-bg); }
+.btn--ghost:hover { border-color: var(--ink); background: var(--ghost-bg-h); color: var(--ink); }
 .btn--onDark { border-color: rgba(255,255,255,.45); color: #fff; background: rgba(255,255,255,.08); }
-.btn--onDark:hover { background: #fff; color: var(--ink); border-color: #fff; }
+.btn--onDark:hover { background: var(--deep-ink); color: var(--deep); border-color: var(--deep-ink); }
 .btn--sm { padding: .55rem 1rem; font-size: .87rem; }
 .btn-row { display: flex; flex-wrap: wrap; gap: .7rem; align-items: center; }
 
@@ -164,7 +224,7 @@ hr { border: 0; border-top: 1px solid var(--line); margin: 0; }
 .hero {
   position: relative; isolation: isolate;
   padding: clamp(3rem, 7vw, 5.5rem) 0 clamp(3rem, 6vw, 5rem);
-  background: var(--ink); color: #fff; overflow: hidden;
+  background: var(--deep); color: var(--deep-ink); overflow: hidden;
 }
 .hero__bg {
   position: absolute; inset: 0; z-index: -2;
@@ -298,7 +358,7 @@ a.card:hover, a.card:focus-visible { text-decoration: none; transform: translate
 .videos { display: grid; gap: clamp(1rem, 2.5vw, 1.5rem); grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); }
 .video {
   position: relative; border: 1px solid var(--line); border-radius: var(--radius);
-  overflow: hidden; background: var(--ink); color: #fff; cursor: pointer; padding: 0; display: block;
+  overflow: hidden; background: var(--deep); color: #fff; cursor: pointer; padding: 0; display: block;
   aspect-ratio: 16 / 9; width: 100%; text-align: left;
 }
 .video img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; opacity: .82; transition: opacity .25s var(--ease), transform .5s var(--ease); }
@@ -312,7 +372,7 @@ a.card:hover, a.card:focus-visible { text-decoration: none; transform: translate
   width: 60px; height: 60px; border-radius: 50%; background: rgba(255,255,255,.92);
   display: grid; place-items: center; box-shadow: var(--shadow);
 }
-.video__play::after { content: ""; border-left: 15px solid var(--ink); border-block: 9px solid transparent; margin-left: 4px; }
+.video__play::after { content: ""; border-left: 15px solid var(--play-ink); border-block: 9px solid transparent; margin-left: 4px; }
 .video iframe { position: absolute; inset: 0; width: 100%; height: 100%; border: 0; }
 
 /* --------------------------------------------------------------- shows --- */
@@ -427,7 +487,7 @@ a.show__location:hover, a.show__location:focus-visible {
 .gallery__grid img { width: 100%; aspect-ratio: 1 / 1; object-fit: cover; transition: transform .5s var(--ease); background: var(--paper-3); }
 .gallery__grid button:hover img { transform: scale(1.045); }
 .gallery__grid button::after {
-  content: ""; position: absolute; inset: 0; box-shadow: inset 0 0 0 1px rgba(20,17,15,.10);
+  content: ""; position: absolute; inset: 0; box-shadow: inset 0 0 0 1px var(--hairline);
   border-radius: var(--radius-sm); pointer-events: none;
 }
 .gallery__hint { font-size: .85rem; color: var(--ink-3); margin-top: 1.2rem; }
@@ -472,7 +532,7 @@ a.show__location:hover, a.show__location:focus-visible {
 .info-card dd { margin: .1rem 0 .9rem; }
 
 /* -------------------------------------------------------------- footer --- */
-.footer { background: var(--ink); color: rgba(255,255,255,.72); padding: clamp(2.5rem, 6vw, 4rem) 0 2rem; }
+.footer { background: var(--deep); color: rgba(255,255,255,.72); padding: clamp(2.5rem, 6vw, 4rem) 0 2rem; }
 .footer a { color: rgba(255,255,255,.86); }
 .footer a:hover { color: #fff; }
 .footer__top { display: flex; flex-wrap: wrap; gap: 1.5rem 3rem; justify-content: space-between; align-items: flex-start; }

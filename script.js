@@ -481,13 +481,26 @@
   }
 
   /* ------------------------------------------------------------- embeds --- */
+  var DARKQ = window.matchMedia ? window.matchMedia("(prefers-color-scheme: dark)") : null;
+  function isDark() { return !!(DARKQ && DARKQ.matches); }
+
   function renderEmbeds() {
     var f = $("#bandcamp-player");
-    if (f) {
-      f.src = "https://bandcamp.com/EmbeddedPlayer/album=" + (SITE.bandcampAlbumId || "") +
-        "/size=large/bgcol=ffffff/linkcol=e0621f/artwork=small/transparent=true/";
-      f.title = "SUN.DYLE \u2014 Typhoon on Bandcamp";
-    }
+    if (!f) return;
+    /* Bandcamp takes its colours in the URL and has no idea about our theme, so
+       a dark page would otherwise get a white rectangle. */
+    var bg = isDark() ? "1c1813" : "ffffff";
+    var link = isDark() ? "ff9d55" : "e0621f";
+    f.src = "https://bandcamp.com/EmbeddedPlayer/album=" + (SITE.bandcampAlbumId || "") +
+      "/size=large/bgcol=" + bg + "/linkcol=" + link + "/artwork=small/transparent=true/";
+    f.title = "SUN.DYLE — Typhoon on Bandcamp";
+  }
+
+  function watchColorScheme() {
+    if (!DARKQ) return;
+    var onChange = function () { renderEmbeds(); };   // swap the player's colours
+    if (DARKQ.addEventListener) DARKQ.addEventListener("change", onChange);
+    else if (DARKQ.addListener) DARKQ.addListener(onChange);
   }
 
   /* ---------------------------------------------------------------- misc --- */
@@ -568,6 +581,7 @@
   function init() {
     fillLinks();
     renderEmbeds();
+    watchColorScheme();
     renderReleases();
     renderVideos();
     renderShows();                                   // hand-written dates paint immediately

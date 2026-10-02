@@ -199,10 +199,6 @@ hr { border: 0; border-top: 1px solid var(--line); margin: 0; }
   letter-spacing: .14em; text-transform: uppercase; padding: .5rem .85rem;
   border-radius: 999px; box-shadow: var(--shadow-sm);
 }
-.hero__art figcaption {
-  margin-top: .85rem; font-size: .82rem; color: rgba(255,255,255,.7);
-  display: flex; justify-content: space-between; gap: 1rem;
-}
 @media (max-width: 880px) {
   .hero__grid { grid-template-columns: 1fr; }
   .hero__art { order: -1; max-width: 420px; }

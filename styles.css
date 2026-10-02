@@ -375,6 +375,8 @@ a.show__location:hover, a.show__location:focus-visible {
 @media (max-width: 900px) { .about { grid-template-columns: 1fr; } }
 .about__photo { position: sticky; top: 92px; }
 .about__photo img { width: 100%; border-radius: var(--radius); border: 1px solid var(--line); box-shadow: var(--shadow-sm); }
+/* the band's badge logo, centred above the About copy */
+.about__logo { display: block; width: min(300px, 70%); height: auto; margin: 0 auto 1.8rem; }
 @media (max-width: 900px) { .about__photo { position: static; } }
 .pull {
   border-left: 3px solid var(--amber); padding: .2rem 0 .2rem 1.2rem; margin: 1.8rem 0;

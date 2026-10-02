@@ -183,7 +183,8 @@
         <h2>Live</h2>
         <p>Catch us around Fort Wayne and beyond. Doors, set times and ticket links are on each date.</p>
       </div>
-      <ul class="shows reveal" id="shows-upcoming"><!-- filled from data/shows.js --></ul>
+      <ul class="shows reveal" id="shows-upcoming"><!-- filled from data/shows.js, data/calendar.json and data/shows.generated.json --></ul>
+      <p class="shows__stamp" id="shows-stamp" hidden></p>
       <div class="shows__toggle reveal" id="shows-past" hidden>
         <h3>Past shows</h3>
         <ul class="shows" id="shows-past-list"></ul>
@@ -352,6 +353,7 @@
 <button class="to-top" id="to-top" type="button" aria-label="Back to top">&uarr;</button>
 
 <script src="data/site.js" defer></script>
+<script src="data/calendar.js" defer></script>
 <script src="data/shows.js" defer></script>
 <script src="script.js" defer></script>
 </body>

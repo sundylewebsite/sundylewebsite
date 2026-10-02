@@ -1,0 +1,45 @@
+# Refreshes the Live dates on the website from the band calendar.
+#
+# Needs one thing from you: the public ICS link pasted into data/calendar.js.
+# Until that is done this job exits quietly and changes nothing.
+#
+# Runs daily (GitHub's scheduler can be 15-60 minutes late under load) and can
+# be kicked off by hand from the Actions tab → "Sync show dates" → Run workflow.
+name: Sync show dates
+
+on:
+  schedule:
+    - cron: "17 9 * * *"
+  workflow_dispatch:
+  push:
+    paths:
+      - "data/calendar.js"
+      - "scripts/sync-shows.py"
+
+permissions:
+  contents: write
+
+jobs:
+  sync:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Pull the calendar
+        run: python3 scripts/sync-shows.py
+
+      - name: Commit the dates if anything changed
+        run: |
+          if git diff --quiet -- data/shows.generated.json; then
+            echo "No change in the dates."
+            exit 0
+          fi
+          git config user.name  "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add data/shows.generated.json
+          git commit -m "Sync show dates from the band calendar"
+          git push

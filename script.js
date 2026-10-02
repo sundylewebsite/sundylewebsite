@@ -134,17 +134,153 @@
     return "<li><" + tag + ' class="show"' + href + ">" + inner + cta + "</" + tag + "></li>";
   }
 
+  /* -------------------------------------------------------------- calendar ---
+     data/calendar.json decides where show dates come from:
+       "manual" — only data/shows.js (what the site shipped with)
+       "ics"    — data/shows.generated.json, refreshed by scripts/sync-shows.py
+       "google" — Google Calendar API, live on every page load (needs a key)
+     Rule: a hand-written entry in data/shows.js always wins over the calendar
+     for the same date + venue, so you can add ticket links or notes by hand. */
+  var CAL = window.CALENDAR || { mode: "manual" };
+  var calData = null;
+
+  function showKey(s) {
+    return (s && s.date ? s.date : "") + "|" + String((s && s.venue) || "").toLowerCase();
+  }
+
+  function fmtTimeFromISO(iso) {
+    var m = /T(\d{2}):(\d{2})/.exec(iso || "");
+    if (!m) return "";
+    var h = Number(m[1]), min = m[2];
+    var h12 = h % 12; if (h12 === 0) h12 = 12;
+    return h12 + ":" + min + " " + (h >= 12 ? "PM" : "AM");
+  }
+
+  /* "The Clyde Theatre, 1808 Bluffton Rd, Fort Wayne, IN 46808" -> venue + city */
+  function splitLoc(loc, defCity) {
+    var parts = String(loc || "").split(",").map(function (p) { return p.trim(); })
+      .filter(function (p) { return p.length; });
+    if (!parts.length) return { venue: "", city: defCity || "" };
+    var venue = parts[0], city = "";
+    if (parts.length >= 3) {
+      var st = parts[parts.length - 1].replace(/\s*\d{5}(-\d{4})?$/, "").trim();
+      city = parts[parts.length - 2] + (st ? ", " + st : "");
+    } else if (parts.length === 2) {
+      city = parts[1];
+    }
+    return { venue: venue, city: city || defCity || "" };
+  }
+
+  function tidyTitle(summary) {
+    var t = String(summary || "");
+    var pre = (CAL.stripPrefix || "").trim();
+    if (pre && t.toLowerCase().indexOf(pre.toLowerCase()) === 0) {
+      t = t.slice(pre.length);
+    } else if (pre) {
+      t = t.replace(new RegExp(pre.replace(/[.*+?^${}()|[\]\\]/g, "\\$&"), "ig"), "");
+    }
+    t = t.replace(/^[\s\-–—@:|·]+/, "").replace(/^(?:at|@|with|w\/|feat\.?|ft\.?)\s+/i, "");
+    return t.trim();
+  }
+
+  /* one Google Calendar API item -> the same shape as data/shows.js entries */
+  function googleToShow(ev) {
+    var s = ev.start || {};
+    var allDay = !s.dateTime && !!s.date;
+    var raw = s.dateTime || s.date || "";
+    var loc = splitLoc(ev.location, CAL.defaultCity);
+    var title = tidyTitle(ev.summary);
+    var note = "";
+    if (title && loc.venue && title.toLowerCase() !== loc.venue.toLowerCase()) note = title;
+    if (ev.description) {
+      var first = String(ev.description).split("\n")[0].trim();
+      if (first && !/^https?:\/\/\S+$/.test(first)) note = note ? note + " — " + first : first;
+    }
+    if (note && loc.venue && note.toLowerCase().indexOf(loc.venue.toLowerCase()) !== -1) note = "";
+    var tickets = ev.url || (String(ev.description || "").match(/https?:\/\/[^\s)]+/) || [""])[0];
+    return {
+      date: raw.slice(0, 10),
+      time: allDay ? "" : fmtTimeFromISO(raw),
+      venue: loc.venue || title || "TBA",
+      city: loc.city,
+      tickets: tickets || "",
+      note: note
+    };
+  }
+
+  function loadCalendar() {
+    if (CAL.mode === "ics") {
+      return fetch("data/shows.generated.json", { cache: "no-store" })
+        .then(function (r) { return r.ok ? r.json() : null; })
+        .catch(function () { return null; });
+    }
+    if (CAL.mode === "google") {
+      if (!CAL.googleApiKey || !CAL.googleCalendarId) return Promise.resolve(null);
+      var url = "https://www.googleapis.com/calendar/v3/calendars/" +
+        encodeURIComponent(CAL.googleCalendarId) + "/events?key=" + encodeURIComponent(CAL.googleApiKey) +
+        "&singleEvents=true&orderBy=startTime&maxResults=100&timeMin=" +
+        encodeURIComponent(new Date().toISOString());
+      return fetch(url)
+        .then(function (r) { return r.ok ? r.json() : null; })
+        .then(function (d) {
+          if (!d || !d.items) return null;                 // bad key / private calendar → stay manual
+          return { generated: null, live: true, source: "google", upcoming: d.items.map(googleToShow), past: [] };
+        })
+        .catch(function () { return null; });
+    }
+    return Promise.resolve(null);
+  }
+
+  function mergedShows() {
+    var man = window.SHOWS || { upcoming: [], past: [] };
+    var manUp = (man.upcoming || []).filter(function (s) { return s && s.date; });
+    var manPast = (man.past || []).filter(function (s) { return s && s.date; });
+    if (!calData) return { upcoming: manUp, past: manPast };
+    var hand = {};
+    manUp.concat(manPast).forEach(function (s) { hand[showKey(s)] = 1; });
+    function notOverridden(s) { return !hand[showKey(s)]; }
+    return {
+      upcoming: (calData.upcoming || []).filter(notOverridden).concat(manUp),
+      past: (calData.past || []).filter(notOverridden).concat(manPast)
+    };
+  }
+
+  function renderSyncStamp() {
+    var el = $("#shows-stamp");
+    if (!el) return;
+    if (CAL.mode === "manual" || CAL.showSyncStamp === false) { el.hidden = true; return; }
+    if (!calData) {
+      el.hidden = false;
+      el.textContent = "Showing dates from the band file — the calendar could not be reached.";
+      return;
+    }
+    if (calData.live) {
+      el.hidden = false;
+      el.textContent = "Dates load live from the band calendar.";
+      return;
+    }
+    if (!calData.generated) { el.hidden = true; return; }
+    var d = new Date(calData.generated);
+    var when = isNaN(d) ? "" : d.toLocaleDateString(undefined, { month: "short", day: "numeric" }) +
+      ", " + d.toLocaleTimeString(undefined, { hour: "numeric", minute: "2-digit" });
+    el.hidden = false;
+    el.textContent = "Dates sync from the band calendar" + (when ? " — last updated " + when : "") + ".";
+  }
+
   function renderShows() {
     var up = $("#shows-upcoming");
     var pastWrap = $("#shows-past");
     var pastList = $("#shows-past-list");
     if (!up) return;
     var today = todayISO();
+    var data = mergedShows();
 
-    var upcoming = (SHOWS.upcoming || []).filter(function (s) { return s && s.date >= today; })
-      .sort(function (a, b) { return a.date < b.date ? -1 : 1; });
-    var past = (SHOWS.past || []).slice()
-      .concat((SHOWS.upcoming || []).filter(function (s) { return s && s.date < today; }))
+    var upcoming = (data.upcoming || []).filter(function (s) { return s.date >= today; })
+      .sort(function (a, b) {
+        if (a.date !== b.date) return a.date < b.date ? -1 : 1;
+        return String(a.time) < String(b.time) ? -1 : 1;
+      });
+    var past = (data.past || []).filter(function (s) { return s.date < today; })
       .sort(function (a, b) { return a.date > b.date ? -1 : 1; });
 
     if (upcoming.length) {
@@ -160,11 +296,13 @@
 
     if (pastWrap && pastList) {
       if (past.length) {
+        pastWrap.hidden = false;
         pastList.innerHTML = past.map(function (s) { return showRow(s, true); }).join("");
-      } else if (pastWrap) {
+      } else {
         pastWrap.hidden = true;
       }
     }
+    renderSyncStamp();
   }
 
   /* --------------------------------------------------------------- gallery ---
@@ -353,7 +491,11 @@
     renderEmbeds();
     renderReleases();
     renderVideos();
-    renderShows();
+    renderShows();                                   // hand-written dates paint immediately
+    loadCalendar().then(function (d) {
+      calData = d;
+      renderShows();                                 // then re-render with the calendar's
+    });
     renderGallery();
     navBehaviour();
     scrollSpy();

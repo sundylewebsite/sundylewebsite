@@ -3,7 +3,7 @@
    from file:// as well as http://, so the page works opened straight off
    disk with no server and no fetch(). */
 window.SHOWS_FROM_CALENDAR = {
-  "generated": "2026-10-02T18:47:18-04:00",
+  "generated": "2026-10-02T18:50:18-04:00",
   "source": "https://p157-caldav.icloud.com/published/2/MTM5NDEyOTUyMDEzOTQxMqjomdo3_gYCcvIEcdb5xyWaGnKotrQ3-f47gkvXZnEE8v4_GbZYQLUGoniOPEJ6WalRccTL0QiKHJyDBtNDjPA",
   "upcoming": [
     {
@@ -11,6 +11,7 @@ window.SHOWS_FROM_CALENDAR = {
       "time": "3:00 PM",
       "title": "Monticello Library",
       "venue": "Monticello-Union Township Public Library",
+      "street": "321 W Broadway St",
       "city": "Monticello, IN",
       "tickets": "",
       "note": "",
@@ -21,6 +22,7 @@ window.SHOWS_FROM_CALENDAR = {
       "time": "7:00 PM",
       "title": "Halloween Show @ Ambrosia",
       "venue": "Ambrosia Orchard",
+      "street": "14025 US Highway 27",
       "city": "Hoagland, IN",
       "tickets": "",
       "note": "",

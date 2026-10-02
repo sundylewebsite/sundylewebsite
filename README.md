@@ -51,11 +51,12 @@ editing this repo.
 Four things to know when you write a gig in that calendar:
 
 - **How a date is laid out** — the event's *title* is the main line, and its
-  *Location* is the line underneath. Put the full address in Location
-  (`The Clyde Theatre, 1808 Bluffton Rd, Fort Wayne, IN 46808`) and the venue and
-  city are pulled out of it. With no Location, whatever follows the `@` in the
-  title becomes the venue and the city is left off rather than guessed. The venue
-  is never printed twice — if the title already says it, the sub heading drops it.
+  *Location* is the address line underneath (venue, then street, then city).
+  Put the full address in Location
+  (`Monticello-Union Township Public Library` ⏎ `321 W Broadway St, Monticello, IN 47960`)
+  and each part is picked out for you. The time sits with the date on the left.
+  Any part the title already says is dropped, so the venue is never printed twice.
+  With no Location, whatever follows the `@` in the title becomes the venue.
   Setting `stripPrefix: ""` would keep "SUN.DYLE" in the main line.
 - **Notes are private by default.** Nothing from an event's notes is published,
   because that field fills up with fees, deposit status and "PA needed". Only a
@@ -80,11 +81,11 @@ calendar's entry for the same date + venue, so you can add a ticket link, a
 support act or a note to a calendar event without touching the calendar:
 
 ```js
-// data/shows.js — "title" is the main line, "venue"/"city" the line under it
+// data/shows.js — "title" is the main line, "venue"/"street"/"city" the line under it
 window.SHOWS = {
   upcoming: [
     { date: "2026-11-14", title: "SUN.DYLE @ The Clyde Theatre", time: "7:30 PM",
-      venue: "The Clyde Theatre", city: "Fort Wayne, IN",
+      venue: "The Clyde Theatre", street: "1808 Bluffton Rd", city: "Fort Wayne, IN",
       tickets: "https://...", note: "Doors 6:30 — VIP soundcheck upgrade" }
   ],
   past: []

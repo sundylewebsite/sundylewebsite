@@ -110,33 +110,30 @@
   function fmtDate(iso) {
     var p = String(iso).split("-");
     var d = new Date(Number(p[0]), Number(p[1]) - 1, Number(p[2]));
-    if (isNaN(d)) return { main: iso, sub: "" };
-    return {
-      main: d.toLocaleDateString(undefined, { month: "short", day: "numeric" }),
-      sub: d.toLocaleDateString(undefined, { weekday: "long" }) + " &middot; " +
-           d.toLocaleDateString(undefined, { month: "long", day: "numeric", year: "numeric" })
-    };
+    if (isNaN(d)) return { main: iso };
+    var main = d.toLocaleDateString(undefined, { month: "short", day: "numeric" });
+    /* The year only appears when it isn't the current one — "Oct 3" on its own reads
+       cleaner on every row, and a date in a later year still says so. */
+    if (d.getFullYear() !== new Date().getFullYear()) main += ", " + d.getFullYear();
+    return { main: main };
   }
   function showRow(s, isPast) {
     var d = fmtDate(s.date);
-    /* Main line = the event title. Sub heading = where it is, with anything the
-       title already says dropped so the venue is never printed twice, plus time. */
+    /* Main line = the event title. Sub heading = the address, minus any part the
+       title already says so the venue is never printed twice. The time sits in
+       the date column next to the day. */
     var title = s.title || s.venue || "TBA";
     var t = String(title).toLowerCase();
-    var venue = String(s.venue || "");
-    var city = String(s.city || "");
-    var sub = [];
-    if (venue && t.indexOf(venue.toLowerCase()) === -1) {
-      sub.push(city ? venue + ", " + city : venue);
-    } else if (city && t.indexOf(city.toLowerCase()) === -1) {
-      sub.push(city);
-    }
-    if (s.time) sub.push(s.time);
+    var address = [s.venue, s.street, s.city].filter(function (p) {
+      return p && t.indexOf(String(p).toLowerCase()) === -1;
+    }).join(", ");
     var inner =
-      '<span class="show__date">' + esc(d.main) + "<small>" + esc(String(s.date).slice(0, 4)) + "</small></span>" +
+      '<span class="show__date">' + esc(d.main) +
+        (s.time ? '<span class="show__time">' + esc(s.time) + "</span>" : "") +
+      "</span>" +
       '<span class="show__main">' +
         '<span class="show__title">' + esc(title) + "</span>" +
-        (sub.length ? '<span class="show__location">' + esc(sub.join(" · ")) + "</span>" : "") +
+        (address ? '<span class="show__location">' + esc(address) + "</span>" : "") +
         (s.note ? '<span class="show__note">' + esc(s.note) + "</span>" : "") +
       "</span>";
     var cta = (!isPast && s.tickets)
@@ -169,28 +166,37 @@
     return h12 + ":" + min + " " + (h >= 12 ? "PM" : "AM");
   }
 
-  /* Location field -> { venue, city }. iOS writes it as two lines with a
+  /* Location field -> { venue, street, city }. iOS writes it as two lines with a
      comma-separated address; Google writes one line. Mirrors split_location()
      in scripts/sync-shows.py — keep the two in step. */
   function splitLoc(loc, defCity) {
-    function out(v, c) { return { venue: v, city: c || defCity || "" }; }
+    function out(v, s, c) { return { venue: v || "", street: s || "", city: c || defCity || "" }; }
     var parts = String(loc || "").split(/[\n,]+/).map(function (p) { return p.trim(); })
       .filter(function (p) { return p.length; });
-    if (!parts.length) return out("", "");
-    var venue = parts[0], city = "";
-    function usable(s) { return !!s && !/^\d/.test(s) && s.toLowerCase() !== venue.toLowerCase(); }
-    for (var i = 0; i < parts.length; i++) {
+    if (!parts.length) return out("", "", "");
+    var venue = parts[0], street = "", city = "";
+    function isStreet(s) { return /^\d+\s+\S/.test(s || ""); }
+    for (var i = 1; i < parts.length; i++) {
       var p = parts[i];
+      if (!street && isStreet(p)) { street = p; continue; }
       var m = /^([A-Z]{2})\s+\d{5}(-\d{4})?$/.exec(p);
-      if (m && i > 0 && usable(parts[i - 1])) { city = parts[i - 1] + ", " + m[1]; break; }
+      if (m) {
+        var prev = parts[i - 1];
+        if (!city && prev.toLowerCase() !== venue.toLowerCase() && !isStreet(prev)) {
+          city = prev + ", " + m[1];
+        }
+        continue;
+      }
       var m2 = /^(.+?)[,\s]\s*([A-Z]{2})\s+\d{5}(-\d{4})?$/.exec(p);
-      if (m2 && usable(m2[1])) { city = m2[1].trim() + ", " + m2[2]; break; }
+      if (m2 && !city && !isStreet(m2[1])) { city = m2[1].trim() + ", " + m2[2]; }
     }
-    if (!city && parts.length > 1 && /^[A-Z]{2}$/.test(parts[parts.length - 1]) &&
-        usable(parts[parts.length - 2])) {
-      city = parts[parts.length - 2] + ", " + parts[parts.length - 1];
+    if (!city && parts.length > 1 && /^[A-Z]{2}$/.test(parts[parts.length - 1])) {
+      var pv = parts[parts.length - 2];
+      if (pv.toLowerCase() !== venue.toLowerCase() && !isStreet(pv)) {
+        city = pv + ", " + parts[parts.length - 1];
+      }
     }
-    return out(venue, city);
+    return out(venue, street, city);
   }
 
   function tidyTitle(summary) {
@@ -257,6 +263,7 @@
       time: allDay ? "" : fmtTimeFromISO(raw),
       title: title || loc.venue || "TBA",
       venue: loc.venue,
+      street: loc.street,
       city: loc.city,
       tickets: tickets || "",
       note: note

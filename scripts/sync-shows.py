@@ -342,36 +342,47 @@ def format_time(ev, cfg):
 
 
 def split_location(loc, cfg):
-    """Read the Location field. Returns (venue, "City, ST").
+    """Read the Location field. Returns {"venue", "street", "city"}.
 
     iOS/macOS write it as two lines, the address comma-separated:
         Monticello-Union Township Public Library
         321 W Broadway St, Monticello, IN  47960, United States
-    Google writes one line. Both are handled; a street address is never mistaken
-    for a city, and a bare "IN 47960" with no city before it is dropped."""
+    Google writes one line. A street address is recognised by its leading house
+    number and kept as its own field, never mistaken for a city."""
+    def result(v="", s="", c=""):
+        return {"venue": v, "street": s, "city": c or cfg.get("defaultCity", "")}
+
     if not loc:
-        return "", cfg.get("defaultCity", "")
+        return result()
     parts = [p.strip() for p in re.split(r"[\n,]+", loc) if p.strip()]
     if not parts:
-        return "", cfg.get("defaultCity", "")
-    venue = parts[0]
-    city = ""
+        return result()
 
-    def usable(s):
-        return bool(s) and not re.match(r"^\d", s) and s.lower() != venue.lower()
+    venue, street, city = parts[0], "", ""
 
-    for i, p in enumerate(parts):
+    def is_street(s):
+        return bool(re.match(r"^\d+\s+\S", s or ""))
+
+    for i, p in enumerate(parts[1:], start=1):
+        if not street and is_street(p):
+            street = p
+            continue
         m = re.match(r"^([A-Z]{2})\s+\d{5}(?:-\d{4})?$", p)
-        if m and i > 0 and usable(parts[i - 1]):
-            city = "%s, %s" % (parts[i - 1], m.group(1))
-            break
+        if m:
+            prev = parts[i - 1]
+            if not city and prev.lower() != venue.lower() and not is_street(prev):
+                city = "%s, %s" % (prev, m.group(1))
+            continue
         m2 = re.match(r"^(.+?)[,\s]\s*([A-Z]{2})\s+\d{5}(?:-\d{4})?$", p)
-        if m2 and usable(m2.group(1)):
+        if m2 and not city and not is_street(m2.group(1)):
             city = "%s, %s" % (m2.group(1).strip(), m2.group(2))
-            break
-    if not city and len(parts) > 1 and re.match(r"^[A-Z]{2}$", parts[-1]) and usable(parts[-2]):
-        city = "%s, %s" % (parts[-2], parts[-1])
-    return venue, city or cfg.get("defaultCity", "")
+
+    if not city and len(parts) > 1 and re.match(r"^[A-Z]{2}$", parts[-1]):
+        prev = parts[-2]
+        if prev.lower() != venue.lower() and not is_street(prev):
+            city = "%s, %s" % (prev, parts[-1])
+
+    return result(venue, street, city)
 
 
 def to_show(ev, cfg):
@@ -388,14 +399,17 @@ def to_show(ev, cfg):
         base = re.sub(re.escape(prefix), "", base, flags=re.I)
     base = base.strip()
 
-    venue, city = split_location(ev.get("location"), cfg)
+    loc = split_location(ev.get("location"), cfg)
+    venue, street, city = loc["venue"], loc["street"], loc["city"]
     title = base
     if not venue:                       # no Location field -> read the venue out of the title
         m = re.split(r"\s*@\s*|\s+[–—]\s+|\s+at\s+", base, maxsplit=1, flags=re.I)
         if len(m) == 2 and m[1].strip():
             head, tail = m[0].strip(), m[1].strip()
-            v, c = split_location(tail, cfg)
-            venue, city = (v or tail), (city or c)
+            inner = split_location(tail, cfg)
+            venue = inner["venue"] or tail
+            street = street or inner["street"]
+            city = city or inner["city"]
             title = head or tail
 
     title = re.sub(r"^[\s\-–—@:|·]+", "", title)
@@ -412,6 +426,7 @@ def to_show(ev, cfg):
         "time": format_time(ev, cfg),
         "title": title or venue or "TBA",
         "venue": venue,
+        "street": street,
         "city": city,
         "tickets": tickets,
         "note": note,

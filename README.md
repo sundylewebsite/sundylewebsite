@@ -16,6 +16,7 @@ sundyle-site/
 ├── assets/
 │   ├── albums/                    album art (already filled in)
 │   ├── fonts/HMCamino.ttf         the band's display face
+│   ├── logo.png                   ← drop your logo here (nav + contact card)
 │   ├── favicon.png, apple-touch-icon.png
 │   └── photos/
 │       ├── hero.jpg               full-width hero background
@@ -175,6 +176,24 @@ commit. Costs one API key and one line of config.
 6. Reload the page. If the key or calendar is wrong the site quietly falls back
    to `data/shows.js` and tells visitors the calendar couldn't be reached.
 
+## Adding your logo
+
+One file, shown in two places — to the left of "SUN.DYLE" in the navigation bar,
+and at the top of the contact card:
+
+```
+assets/logo.png
+```
+
+Replace it and both update. A PNG with a transparent background works best. A
+square mark and a wide wordmark both work — the shapes adapt (32px tall in the
+nav, 64px in the card) and `object-fit` keeps them undistorted. If your logo is
+an SVG, either export a 512px PNG or point both `<img>` tags in `index.html` at
+the `.svg` and drop the `width`/`height` attributes on them.
+
+The file currently in there is a generated placeholder — a sun mark in the
+site's amber, standing in for the real thing.
+
 ## Adding photos
 
 Photos are dropped into `assets/photos/`. The site picks them up by filename, so
@@ -246,6 +265,9 @@ git push
   holds one gig (Oct 3, Monticello Library), which is what the Live section
   shows. iCloud can take a few minutes to update the published feed after you
   edit the calendar; run `python3 scripts/sync-shows.py` to pull changes in.
-- **Hero / About / gallery photos** — currently generated placeholders that say
-  which file to replace. Replace them before the domain goes live.
+- **Logo** — `assets/logo.png` is a generated sun placeholder (nav + contact
+  card). Drop the real one in.
+- **Hero / About / gallery photos** — the hero and About photos are now real;
+  the 12 gallery tiles are still generated placeholders that say which file to
+  replace.
 - **Contact email** — `sun.dyle.mgmt@gmail.com` is used throughout.

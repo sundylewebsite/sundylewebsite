@@ -3,30 +3,26 @@
    Read by the website (as window.CALENDAR) AND by scripts/sync-shows.py,
    so this one file is the only place to configure the calendar.
 
-   mode:
-     "ics"    paste your public calendar link into icsUrl below, then let
-              scripts/sync-shows.py (or the GitHub Action) refresh the dates.
-              Works with Google, Apple/iCloud, Outlook — anything with an ICS.
-     "google" live on every page load from the Google Calendar API. Needs
-              googleApiKey + googleCalendarId (see README).
-     "manual" ignore calendars, use data/shows.js exactly as written.
-
-   Keep this file valid JSON inside the braces: no trailing commas, no
-   comments inside the object. Both readers are forgiving of // comments,
-   but not of a dangling comma.
+   This is Ben's iCloud calendar "sundyle site", published read-only.
+   Add a gig to that calendar, and it lands on the website.
    ========================================================================== */
 
 window.CALENDAR = {
   "mode": "ics",
 
-  "icsUrl": "PASTE-YOUR-PUBLIC-ICS-LINK-HERE",
+  "icsUrl": "webcal://p157-caldav.icloud.com/published/2/MTM5NDEyOTUyMDEzOTQxMqjomdo3_gYCcvIEcdb5xyWaGnKotrQ3-f47gkvXZnEE8v4_GbZYQLUGoniOPEJ6WalRccTL0QiKHJyDBtNDjPA",
   "timezone": "America/Indiana/Indianapolis",
-  "defaultCity": "Fort Wayne, IN",
+  "defaultCity": "",
 
   "stripPrefix": "SUN.DYLE",
-  "titleContains": "SUN.DYLE",
+
+  "titleContains": "",
+  "skipTitleContains": ["[hold]", "[private]", "[tentative]", "[draft]", "rehearsal"],
   "skipCancelled": true,
+
   "noteFromDescription": true,
+  "publicNotePrefix": "Public:",
+
   "requireLocation": false,
 
   "horizonDays": 550,

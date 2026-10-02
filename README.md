@@ -44,6 +44,26 @@ just saved instead of last week's `data/shows.js`.
 
 ## Where the show dates come from
 
+**Already wired up:** `data/calendar.js` points at the published iCloud calendar
+*"sundyle site"*. Add a gig there and it lands on the website — no code, no
+editing this repo.
+
+Four things to know when you write a gig in that calendar:
+
+- **Venue and city** — put the full address in the event's *Location* field
+  (`The Clyde Theatre, 1808 Bluffton Rd, Fort Wayne, IN 46808`); the venue and
+  city are pulled out of it. With no location, whatever follows the `@` in the
+  title becomes the venue and the city line is left off rather than guessed.
+- **Notes are private by default.** Nothing from an event's notes is published,
+  because that field fills up with fees, deposit status and "PA needed". Only a
+  line you start with `Public:` reaches the site —
+  `Public: Doors at 7 — all ages`.
+- **Keeping one off the site** — put `[hold]`, `[private]`, `[tentative]`,
+  `[draft]` or the word `rehearsal` anywhere in the title and the sync skips it.
+  So does anything with "cancel" in the title.
+- **Tickets** — put the ticket link in the event's *URL* field and the row grows
+  a Tickets button.
+
 `data/calendar.js` has one setting that decides everything:
 
 | mode | what the Live section shows | you maintain |
@@ -75,6 +95,8 @@ themselves once they happen, so nothing needs deleting.
 Works with Google, Apple/iCloud, Outlook, Bandsintown — anything that publishes
 an ICS feed. No API keys, no third party in the page, no runtime dependency: the
 site stays a static file, and the dates are refreshed before they're published.
+The iCloud calendar *"sundyle site"* is already set up this way; steps 1–2 are
+recorded here so you know where the URL lives and how to point it somewhere else.
 
 1. **Get the calendar's ICS link** (its "secret"/public address):
    - **Google Calendar** — Settings → click the calendar in the left list →
@@ -107,6 +129,19 @@ site stays a static file, and the dates are refreshed before they're published.
    and commits `data/shows.generated.json` when the dates change. To refresh
    sooner: Actions tab → *Sync show dates* → *Run workflow*. (GitHub's scheduler
    can run 15–60 minutes late; it's a daily job, not a stopwatch.)
+
+**About the calendar URL.** The published link above is a read-only token — it
+can only read this one calendar, and only you can unpublish it. It sits in
+`data/calendar.js`, which is a public file on a public site, so treat it like a
+"share" link rather than a password. If you'd rather it not be in the repo at
+all, set it as an environment variable instead and it takes priority:
+
+```bash
+export SUN_DYLE_ICS_URL='webcal://p157-caldav.icloud.com/published/2/…'
+```
+
+GitHub Actions can hold the same value as a repository secret (Settings →
+Secrets and variables → Actions), read into `env:` on the sync step.
 
 Prefer to do it on this Mac instead of GitHub? Same one-liner:
 
@@ -201,9 +236,10 @@ git push
 
 - **Lineup** (`index.html`, the `grid--people` block). The six names come from
   the January 2024 Whatzup article; confirm who is in the band now.
-- **Calendar** — `data/calendar.js` ships with a placeholder URL and an empty
-  `data/shows.generated.json`, so the Live section shows the "no dates yet"
-  state. Paste the ICS link and run the sync to fill it.
+- **Calendar** — wired to the iCloud calendar *"sundyle site"*. It currently
+  holds one gig (Oct 3, Monticello Library), which is what the Live section
+  shows. iCloud can take a few minutes to update the published feed after you
+  edit the calendar; run `python3 scripts/sync-shows.py` to pull changes in.
 - **Hero / About / gallery photos** — currently generated placeholders that say
   which file to replace. Replace them before the domain goes live.
 - **Contact email** — `sun.dyle.mgmt@gmail.com` is used throughout.

@@ -19,6 +19,7 @@ Config lives in data/calendar.json and is shared with the website.
 
 import argparse
 import json
+import os
 import re
 import sys
 import urllib.request
@@ -29,8 +30,8 @@ try:
 except ImportError:                     # Python < 3.9
     ZoneInfo = None
 
-HERE = __import__("os").path.dirname(__import__("os").path.abspath(__file__))
-ROOT = __import__("os").path.dirname(HERE)
+HERE = os.path.dirname(os.path.abspath(__file__))
+ROOT = os.path.dirname(HERE)
 
 WEEKDAYS = {"MO": 0, "TU": 1, "WE": 2, "TH": 3, "FR": 4, "SA": 5, "SU": 6}
 DEFAULT_HORIZON_DAYS = 550             # how far ahead to expand recurring gigs
@@ -293,13 +294,38 @@ def events_from_ics(text, cfg, now):
 
 # ------------------------------------------------------------- filtering
 def keep(ev, cfg):
-    if cfg.get("titleContains") and cfg["titleContains"].lower() not in (ev.get("summary") or "").lower():
+    title = (ev.get("summary") or "")
+    lower = title.lower()
+    if cfg.get("titleContains") and cfg["titleContains"].lower() not in lower:
         return False
+    for word in (cfg.get("skipTitleContains") or []):
+        if word and word.lower() in lower:
+            return False
     if cfg.get("requireLocation") and not (ev.get("location") or "").strip():
         return False
-    if cfg.get("skipCancelled") and "cancel" in (ev.get("summary") or "").lower():
+    if cfg.get("skipCancelled") and "cancel" in lower:
         return False
     return True
+
+
+def public_note(desc, cfg):
+    """Publish description text only if the band marked it public.
+
+    A gig calendar is full of things that must not reach a public website — fees,
+    deposit status, "PA needed", contact phone numbers. So the default is to
+    publish nothing from the description, and to pick up only lines that start
+    with `publicNotePrefix` (e.g. "Public: Doors at 7, all ages")."""
+    if not desc or cfg.get("noteFromDescription") is False:
+        return ""
+    prefix = (cfg.get("publicNotePrefix") or "").strip()
+    if prefix:
+        for line in desc.split("\n"):
+            line = line.strip()
+            if line.lower().startswith(prefix.lower()):
+                return line[len(prefix):].strip()[:200]
+        return ""
+    first = first_line(desc)                    # no prefix configured → first line, on purpose
+    return "" if re.fullmatch(r"https?://\S+", first or "") else first
 
 
 def format_time(ev, cfg):
@@ -356,11 +382,7 @@ def to_show(ev, cfg):
     elif title and title.lower() != venue.lower():
         note = title
 
-    desc_line = ""
-    if cfg.get("noteFromDescription", True):
-        desc_line = first_line(ev.get("description") or "")
-        if re.fullmatch(r"https?://\S+", desc_line or ""):
-            desc_line = ""
+    desc_line = public_note(ev.get("description"), cfg)
     if desc_line:
         note = (note + " — " + desc_line).strip(" —") if note else desc_line
     if note and venue and note.lower() in venue.lower():
@@ -393,8 +415,8 @@ def dedupe(shows):
 # -------------------------------------------------------------------- main
 def main():
     ap = argparse.ArgumentParser(description="Sync a public ICS calendar into data/shows.generated.json")
-    ap.add_argument("--config", default=__import__("os").path.join(ROOT, "data", "calendar.js"))
-    ap.add_argument("--out", default=__import__("os").path.join(ROOT, "data", "shows.generated.json"))
+    ap.add_argument("--config", default=os.path.join(ROOT, "data", "calendar.js"))
+    ap.add_argument("--out", default=os.path.join(ROOT, "data", "shows.generated.json"))
     ap.add_argument("--ics-file", help="read a local .ics instead of fetching the URL")
     ap.add_argument("--ics-url", help="override the URL from the config")
     ap.add_argument("--dry-run", action="store_true", help="print the result, write nothing")
@@ -406,7 +428,8 @@ def main():
     if args.print_config:
         print(json.dumps(cfg, indent=2)); return 0
 
-    url = args.ics_url or cfg.get("icsUrl", "")
+    url = (args.ics_url or os.environ.get("SUN_DYLE_ICS_URL", "").strip()
+           or cfg.get("icsUrl", ""))
     if args.ics_file:
         with open(args.ics_file, encoding="utf-8") as fh:
             text = fh.read()

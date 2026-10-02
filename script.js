@@ -119,11 +119,12 @@
   }
   function showRow(s, isPast) {
     var d = fmtDate(s.date);
+    var where = [s.city, s.time].filter(Boolean).join(" &middot; ");
     var inner =
       '<span class="show__date">' + esc(d.main) + "<small>" + esc(String(s.date).slice(0, 4)) + "</small></span>" +
       '<span class="show__main">' +
         '<span class="show__venue">' + esc(s.venue) + "</span>" +
-        '<span class="show__where">' + esc(s.city || "") + (s.time ? " &middot; " + esc(s.time) : "") + "</span>" +
+        (where ? '<span class="show__where">' + where + "</span>" : "") +
         (s.note ? '<span class="show__note">' + esc(s.note) + "</span>" : "") +
       "</span>";
     var cta = (!isPast && s.tickets)
@@ -183,6 +184,43 @@
     return t.trim();
   }
 
+  /* the same filters the sync script applies, for the live Google mode */
+  function skipByTitle(summary) {
+    var lower = String(summary || "").toLowerCase();
+    var words = CAL.skipTitleContains || [];
+    for (var i = 0; i < words.length; i++) {
+      if (words[i] && lower.indexOf(String(words[i]).toLowerCase()) !== -1) return true;
+    }
+    return false;
+  }
+
+  function keepEvent(ev) {
+    var s = String((ev && ev.summary) || "");
+    var lower = s.toLowerCase();
+    if (CAL.titleContains && lower.indexOf(String(CAL.titleContains).toLowerCase()) === -1) return false;
+    if (skipByTitle(s)) return false;
+    if (CAL.skipCancelled && lower.indexOf("cancel") !== -1) return false;
+    return true;
+  }
+
+  /* publish description text only if the band marked it public */
+  function publicNote(desc) {
+    if (!desc || CAL.noteFromDescription === false) return "";
+    var prefix = (CAL.publicNotePrefix || "").trim();
+    var lines = String(desc).split("\n");
+    if (prefix) {
+      for (var i = 0; i < lines.length; i++) {
+        var line = lines[i].trim();
+        if (line.toLowerCase().indexOf(prefix.toLowerCase()) === 0) {
+          return line.slice(prefix.length).trim().slice(0, 200);
+        }
+      }
+      return "";
+    }
+    var first = lines[0].trim();
+    return /^https?:\/\/\S+$/.test(first) ? "" : first;
+  }
+
   /* one Google Calendar API item -> the same shape as data/shows.js entries */
   function googleToShow(ev) {
     var s = ev.start || {};
@@ -192,10 +230,8 @@
     var title = tidyTitle(ev.summary);
     var note = "";
     if (title && loc.venue && title.toLowerCase() !== loc.venue.toLowerCase()) note = title;
-    if (ev.description) {
-      var first = String(ev.description).split("\n")[0].trim();
-      if (first && !/^https?:\/\/\S+$/.test(first)) note = note ? note + " — " + first : first;
-    }
+    var desc = publicNote(ev.description);
+    if (desc) note = note ? note + " — " + desc : desc;
     if (note && loc.venue && note.toLowerCase().indexOf(loc.venue.toLowerCase()) !== -1) note = "";
     var tickets = ev.url || (String(ev.description || "").match(/https?:\/\/[^\s)]+/) || [""])[0];
     return {
@@ -224,7 +260,8 @@
         .then(function (r) { return r.ok ? r.json() : null; })
         .then(function (d) {
           if (!d || !d.items) return null;                 // bad key / private calendar → stay manual
-          return { generated: null, live: true, source: "google", upcoming: d.items.map(googleToShow), past: [] };
+          return { generated: null, live: true, source: "google",
+                   upcoming: d.items.filter(keepEvent).map(googleToShow), past: [] };
         })
         .catch(function () { return null; });
     }

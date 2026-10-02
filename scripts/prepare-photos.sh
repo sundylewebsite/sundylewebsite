@@ -63,15 +63,21 @@ esac
 
 DEST="${2:-$ROOT/assets/photos/gallery}"
 mkdir -p "$DEST"
+DEST_ABS="$(cd "$DEST" && pwd)"
+
+if [ -d "$SRC" ] && [ "$(cd "$SRC" && pwd)" = "$DEST_ABS" ]; then
+  die "source and destination are the same folder — point this at the folder the photos came from instead"
+fi
 
 # find the first free photo-NN.jpg slot
 next=1
 while [ -e "$(printf '%s/photo-%02d.jpg' "$DEST" "$next")" ]; do next=$((next + 1)); done
 
 count=0
+# -not -path keeps the destination's own files from being re-processed when
+# the destination happens to sit inside the source folder.
 while IFS= read -r -d '' f; do
   base="$(basename "$f")"
-  case "$(echo "$base" | tr 'A-Z' 'a-z')" in *.jpg|*.jpeg) ;; esac
   out="$(printf '%s/photo-%02d.jpg' "$DEST" "$next")"
   convert_one "$f" "$out.tmp"
   mv "$out.tmp" "$out"
@@ -80,6 +86,7 @@ while IFS= read -r -d '' f; do
 done < <(find "$SRC" -maxdepth 2 -type f \
            \( -iname '*.jpg' -o -iname '*.jpeg' -o -iname '*.png' \
            -o -iname '*.heic' -o -iname '*.tif' -o -iname '*.tiff' \) \
+           -not -path "$DEST_ABS/*" \
            -print0 | sort -z)
 
 [ "$count" -gt 0 ] || die "no images found in $SRC"

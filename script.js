@@ -80,7 +80,7 @@
 
   /* ---------------------------------------------------------------- videos --- */
   function renderVideos() {
-    var el = $("#videos");
+    var el = $("#videos-grid");
     if (!el) return;
     el.innerHTML = (SITE.videos || []).map(function (v) {
       return '<button class="video" type="button" data-yt="' + esc(v.id) + '" ' +

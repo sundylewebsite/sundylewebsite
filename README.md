@@ -12,7 +12,7 @@ sundyle-site/
 │   ├── site.js                    links, releases, videos, press  ← edit this one
 │   ├── calendar.js                where the Live dates come from  ← or this one
 │   ├── shows.js                   hand-written dates (always win)
-│   └── shows.generated.json       written by the sync script — don't edit
+│   └── shows.generated.js         written by the sync script — don't edit
 ├── assets/
 │   ├── albums/                    album art (already filled in)
 │   ├── fonts/HMCamino.ttf         the band's display face
@@ -23,7 +23,7 @@ sundyle-site/
 │       └── gallery/               photo-01.jpg, photo-02.jpg, … the photo grid
 ├── scripts/
 │   ├── serve.py                   local preview server (no-cache)
-│   ├── sync-shows.py              calendar → data/shows.generated.json
+│   ├── sync-shows.py              calendar → data/shows.generated.js
 │   └── prepare-photos.sh          resize + rename photos for the web
 ├── .github/workflows/sync-shows.yml   daily calendar refresh
 ├── CNAME                          tells GitHub Pages the custom domain
@@ -68,7 +68,7 @@ Four things to know when you write a gig in that calendar:
 
 | mode | what the Live section shows | you maintain |
 |---|---|---|
-| `"ics"` | the dates in `data/shows.generated.json`, refreshed from your calendar | the calendar, and a daily refresh |
+| `"ics"` | the dates in `data/shows.generated.js`, refreshed from your calendar | the calendar, and a daily refresh |
 | `"google"` | your calendar, live on every page load | the calendar (+ a Google API key) |
 | `"manual"` | only `data/shows.js` | `data/shows.js` by hand |
 
@@ -118,7 +118,7 @@ recorded here so you know where the URL lives and how to point it somewhere else
    Set `titleContains: ""` to take every event in the calendar.
 4. **Pull it down** and look before you commit:
    ```bash
-   python3 scripts/sync-shows.py            # writes data/shows.generated.json
+   python3 scripts/sync-shows.py            # writes data/shows.generated.js
    python3 scripts/sync-shows.py --dry-run  # just prints what it found
    ```
    Recurring events are expanded (weekly residencies, COUNT/UNTIL, EXDATEs),
@@ -126,7 +126,7 @@ recorded here so you know where the URL lives and how to point it somewhere else
    ticket links are picked up from the event's URL or its description.
 5. **Keep it fresh.** `.github/workflows/sync-shows.yml` already does it: a
    GitHub Action runs daily, and on any push that touches the calendar config,
-   and commits `data/shows.generated.json` when the dates change. To refresh
+   and commits `data/shows.generated.js` when the dates change. To refresh
    sooner: Actions tab → *Sync show dates* → *Run workflow*. (GitHub's scheduler
    can run 15–60 minutes late; it's a daily job, not a stopwatch.)
 

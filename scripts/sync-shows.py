@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-SUN.DYLE — pull shows out of a public calendar (ICS) into data/shows.generated.json
+SUN.DYLE — pull shows out of a public calendar (ICS) into data/shows.generated.js
 
 Works with any calendar that publishes an ICS feed: Google Calendar
 (calendar.google.com/.../public/basic.ics), Apple/iCloud published calendars
@@ -9,12 +9,12 @@ Works with any calendar that publishes an ICS feed: Google Calendar
 Python standard library only — no pip install, so it runs the same on your Mac
 and in GitHub Actions.
 
-    scripts/sync-shows.py                 # reads data/calendar.json
+    scripts/sync-shows.py                 # reads data/calendar.js
     scripts/sync-shows.py --dry-run       # print, don't write
     scripts/sync-shows.py --ics-file x.ics
     scripts/sync-shows.py --print-config
 
-Config lives in data/calendar.json and is shared with the website.
+Config lives in data/calendar.js and is shared with the website.
 """
 
 import argparse
@@ -414,9 +414,9 @@ def dedupe(shows):
 
 # -------------------------------------------------------------------- main
 def main():
-    ap = argparse.ArgumentParser(description="Sync a public ICS calendar into data/shows.generated.json")
+    ap = argparse.ArgumentParser(description="Sync a public ICS calendar into data/shows.generated.js")
     ap.add_argument("--config", default=os.path.join(ROOT, "data", "calendar.js"))
-    ap.add_argument("--out", default=os.path.join(ROOT, "data", "shows.generated.json"))
+    ap.add_argument("--out", default=os.path.join(ROOT, "data", "shows.generated.js"))
     ap.add_argument("--ics-file", help="read a local .ics instead of fetching the URL")
     ap.add_argument("--ics-url", help="override the URL from the config")
     ap.add_argument("--dry-run", action="store_true", help="print the result, write nothing")
@@ -479,7 +479,12 @@ def main():
         "upcoming": upcoming,
         "past": past,
     }
-    payload = json.dumps(result, indent=2, ensure_ascii=False) + "\n"
+    payload = ("/* Written by scripts/sync-shows.py from data/calendar.js — do not edit.\n"
+               "   A .js file rather than .json on purpose: a plain <script> tag loads\n"
+               "   from file:// as well as http://, so the page works opened straight off\n"
+               "   disk with no server and no fetch(). */\n"
+               "window.SHOWS_FROM_CALENDAR = "
+               + json.dumps(result, indent=2, ensure_ascii=False) + ";\n")
     if args.dry_run:
         print(payload)
     else:

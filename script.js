@@ -136,9 +136,9 @@
   }
 
   /* -------------------------------------------------------------- calendar ---
-     data/calendar.json decides where show dates come from:
+     data/calendar.js decides where show dates come from:
        "manual" — only data/shows.js (what the site shipped with)
-       "ics"    — data/shows.generated.json, refreshed by scripts/sync-shows.py
+       "ics"    — data/shows.generated.js, refreshed by scripts/sync-shows.py
        "google" — Google Calendar API, live on every page load (needs a key)
      Rule: a hand-written entry in data/shows.js always wins over the calendar
      for the same date + venue, so you can add ticket links or notes by hand. */
@@ -246,9 +246,9 @@
 
   function loadCalendar() {
     if (CAL.mode === "ics") {
-      return fetch("data/shows.generated.json", { cache: "no-store" })
-        .then(function (r) { return r.ok ? r.json() : null; })
-        .catch(function () { return null; });
+      /* data/shows.generated.js is a plain script tag, so this is already loaded —
+         no fetch, which means the page also works opened straight off disk. */
+      return Promise.resolve(window.SHOWS_FROM_CALENDAR || null);
     }
     if (CAL.mode === "google") {
       if (!CAL.googleApiKey || !CAL.googleCalendarId) return Promise.resolve(null);
@@ -288,7 +288,7 @@
     if (CAL.mode === "manual" || CAL.showSyncStamp === false) { el.hidden = true; return; }
     if (!calData) {
       el.hidden = false;
-      el.textContent = "Showing dates from the band file — the calendar could not be reached.";
+      el.textContent = "Showing dates from data/shows.js — no synced calendar data found.";
       return;
     }
     if (calData.live) {

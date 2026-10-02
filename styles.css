@@ -330,8 +330,8 @@ a.show:hover, a.show:focus-visible {
 .show__date { font-family: var(--display); font-size: 1.05rem; color: var(--amber-2); }
 .show__date small { display: block; font-family: var(--body); font-size: .78rem; color: var(--ink-3); letter-spacing: .06em; text-transform: uppercase; font-weight: 600; }
 .show__main { display: block; min-width: 0; }
-.show__venue { display: block; font-family: var(--display); font-size: 1.25rem; line-height: 1.2; margin: 0 0 .2rem; }
-.show__where { display: block; font-size: .92rem; color: var(--ink-2); margin: 0; }
+.show__title { display: block; font-family: var(--display); font-size: 1.25rem; line-height: 1.2; margin: 0 0 .2rem; }
+.show__location { display: block; font-size: .92rem; color: var(--ink-2); margin: 0; }
 .show__note { display: block; font-size: .82rem; color: var(--ink-3); margin: .25rem 0 0; }
 .show__cta { white-space: nowrap; }
 @media (max-width: 760px) {

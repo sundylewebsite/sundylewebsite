@@ -342,57 +342,75 @@ def format_time(ev, cfg):
 
 
 def split_location(loc, cfg):
-    """'The Clyde Theatre, 1808 Bluffton Rd, Fort Wayne, IN 46809' -> venue + city."""
-    parts = [p.strip() for p in (loc or "").split(",") if p.strip()]
+    """Read the Location field. Returns (venue, "City, ST").
+
+    iOS/macOS write it as two lines, the address comma-separated:
+        Monticello-Union Township Public Library
+        321 W Broadway St, Monticello, IN  47960, United States
+    Google writes one line. Both are handled; a street address is never mistaken
+    for a city, and a bare "IN 47960" with no city before it is dropped."""
+    if not loc:
+        return "", cfg.get("defaultCity", "")
+    parts = [p.strip() for p in re.split(r"[\n,]+", loc) if p.strip()]
     if not parts:
         return "", cfg.get("defaultCity", "")
     venue = parts[0]
     city = ""
-    if len(parts) >= 3:
-        tail = parts[-2]
-        state = re.sub(r"\s*\d{5}(-\d{4})?$", "", parts[-1]).strip()
-        city = "%s, %s" % (tail, state) if state else tail
-    elif len(parts) == 2:
-        city = parts[1]
-        if cfg.get("defaultCity") and re.search(r"[A-Z]{2}$", parts[1]) is None and re.search(r",", cfg["defaultCity"]):
-            city = "%s, %s" % (parts[1], cfg["defaultCity"].split(",")[-1].strip())
+
+    def usable(s):
+        return bool(s) and not re.match(r"^\d", s) and s.lower() != venue.lower()
+
+    for i, p in enumerate(parts):
+        m = re.match(r"^([A-Z]{2})\s+\d{5}(?:-\d{4})?$", p)
+        if m and i > 0 and usable(parts[i - 1]):
+            city = "%s, %s" % (parts[i - 1], m.group(1))
+            break
+        m2 = re.match(r"^(.+?)[,\s]\s*([A-Z]{2})\s+\d{5}(?:-\d{4})?$", p)
+        if m2 and usable(m2.group(1)):
+            city = "%s, %s" % (m2.group(1).strip(), m2.group(2))
+            break
+    if not city and len(parts) > 1 and re.match(r"^[A-Z]{2}$", parts[-1]) and usable(parts[-2]):
+        city = "%s, %s" % (parts[-2], parts[-1])
     return venue, city or cfg.get("defaultCity", "")
 
 
 def to_show(ev, cfg):
+    """One calendar event -> the shape the website renders.
+
+    `title` is the event name and becomes the main line; `venue`/`city` come from
+    the event's Location field and become the sub heading underneath it."""
     summary = ev.get("summary") or ""
     prefix = (cfg.get("stripPrefix") or "").strip()
-    title = summary
-    if prefix and title.lower().startswith(prefix.lower()):
-        title = title[len(prefix):].strip(" -–—@:|·")
+    base = summary
+    if prefix and base.lower().startswith(prefix.lower()):
+        base = base[len(prefix):]
     elif prefix:
-        title = re.sub(re.escape(prefix), "", title, flags=re.I).strip(" -–—@:|·")
-    # drop a leading preposition so "at Celestial Fest" doesn't repeat the venue
-    title = re.sub(r"^(?:at|@|with|w/|feat\.?|ft\.?|presented by)\s+", "", title, flags=re.I).strip()
+        base = re.sub(re.escape(prefix), "", base, flags=re.I)
+    base = base.strip()
 
     venue, city = split_location(ev.get("location"), cfg)
-    note = ""
-    if not venue:                                   # no LOCATION → look in the title
-        m = re.split(r"\s+[@]\s+|\s+[–—]\s+|\s+at\s+", title, maxsplit=1, flags=re.I)
+    title = base
+    if not venue:                       # no Location field -> read the venue out of the title
+        m = re.split(r"\s*@\s*|\s+[–—]\s+|\s+at\s+", base, maxsplit=1, flags=re.I)
         if len(m) == 2 and m[1].strip():
-            venue, city = split_location(m[1], cfg)
-            title = m[0].strip()
-    if not venue:
-        venue = title or "TBA"
-    elif title and title.lower() != venue.lower():
-        note = title
+            head, tail = m[0].strip(), m[1].strip()
+            v, c = split_location(tail, cfg)
+            venue, city = (v or tail), (city or c)
+            title = head or tail
 
-    desc_line = public_note(ev.get("description"), cfg)
-    if desc_line:
-        note = (note + " — " + desc_line).strip(" —") if note else desc_line
+    title = re.sub(r"^[\s\-–—@:|·]+", "", title)
+    title = re.sub(r"^(?:at|@|with|w/|feat\.?|ft\.?|presented by)\s+", "", title, flags=re.I).strip()
+
+    note = public_note(ev.get("description"), cfg)
     if note and venue and note.lower() in venue.lower():
-        note = ""                               # don't repeat the venue as a note
+        note = ""
 
     tickets = (ev.get("url") or "").strip() or first_url(ev.get("description") or "")
 
     return {
         "date": ev["_day"].isoformat(),
         "time": format_time(ev, cfg),
+        "title": title or venue or "TBA",
         "venue": venue,
         "city": city,
         "tickets": tickets,

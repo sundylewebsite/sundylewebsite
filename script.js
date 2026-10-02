@@ -119,12 +119,24 @@
   }
   function showRow(s, isPast) {
     var d = fmtDate(s.date);
-    var where = [s.city, s.time].filter(Boolean).join(" &middot; ");
+    /* Main line = the event title. Sub heading = where it is, with anything the
+       title already says dropped so the venue is never printed twice, plus time. */
+    var title = s.title || s.venue || "TBA";
+    var t = String(title).toLowerCase();
+    var venue = String(s.venue || "");
+    var city = String(s.city || "");
+    var sub = [];
+    if (venue && t.indexOf(venue.toLowerCase()) === -1) {
+      sub.push(city ? venue + ", " + city : venue);
+    } else if (city && t.indexOf(city.toLowerCase()) === -1) {
+      sub.push(city);
+    }
+    if (s.time) sub.push(s.time);
     var inner =
       '<span class="show__date">' + esc(d.main) + "<small>" + esc(String(s.date).slice(0, 4)) + "</small></span>" +
       '<span class="show__main">' +
-        '<span class="show__venue">' + esc(s.venue) + "</span>" +
-        (where ? '<span class="show__where">' + where + "</span>" : "") +
+        '<span class="show__title">' + esc(title) + "</span>" +
+        (sub.length ? '<span class="show__location">' + esc(sub.join(" · ")) + "</span>" : "") +
         (s.note ? '<span class="show__note">' + esc(s.note) + "</span>" : "") +
       "</span>";
     var cta = (!isPast && s.tickets)
@@ -157,19 +169,28 @@
     return h12 + ":" + min + " " + (h >= 12 ? "PM" : "AM");
   }
 
-  /* "The Clyde Theatre, 1808 Bluffton Rd, Fort Wayne, IN 46808" -> venue + city */
+  /* Location field -> { venue, city }. iOS writes it as two lines with a
+     comma-separated address; Google writes one line. Mirrors split_location()
+     in scripts/sync-shows.py — keep the two in step. */
   function splitLoc(loc, defCity) {
-    var parts = String(loc || "").split(",").map(function (p) { return p.trim(); })
+    function out(v, c) { return { venue: v, city: c || defCity || "" }; }
+    var parts = String(loc || "").split(/[\n,]+/).map(function (p) { return p.trim(); })
       .filter(function (p) { return p.length; });
-    if (!parts.length) return { venue: "", city: defCity || "" };
+    if (!parts.length) return out("", "");
     var venue = parts[0], city = "";
-    if (parts.length >= 3) {
-      var st = parts[parts.length - 1].replace(/\s*\d{5}(-\d{4})?$/, "").trim();
-      city = parts[parts.length - 2] + (st ? ", " + st : "");
-    } else if (parts.length === 2) {
-      city = parts[1];
+    function usable(s) { return !!s && !/^\d/.test(s) && s.toLowerCase() !== venue.toLowerCase(); }
+    for (var i = 0; i < parts.length; i++) {
+      var p = parts[i];
+      var m = /^([A-Z]{2})\s+\d{5}(-\d{4})?$/.exec(p);
+      if (m && i > 0 && usable(parts[i - 1])) { city = parts[i - 1] + ", " + m[1]; break; }
+      var m2 = /^(.+?)[,\s]\s*([A-Z]{2})\s+\d{5}(-\d{4})?$/.exec(p);
+      if (m2 && usable(m2[1])) { city = m2[1].trim() + ", " + m2[2]; break; }
     }
-    return { venue: venue, city: city || defCity || "" };
+    if (!city && parts.length > 1 && /^[A-Z]{2}$/.test(parts[parts.length - 1]) &&
+        usable(parts[parts.length - 2])) {
+      city = parts[parts.length - 2] + ", " + parts[parts.length - 1];
+    }
+    return out(venue, city);
   }
 
   function tidyTitle(summary) {
@@ -228,16 +249,14 @@
     var raw = s.dateTime || s.date || "";
     var loc = splitLoc(ev.location, CAL.defaultCity);
     var title = tidyTitle(ev.summary);
-    var note = "";
-    if (title && loc.venue && title.toLowerCase() !== loc.venue.toLowerCase()) note = title;
-    var desc = publicNote(ev.description);
-    if (desc) note = note ? note + " — " + desc : desc;
+    var note = publicNote(ev.description);
     if (note && loc.venue && note.toLowerCase().indexOf(loc.venue.toLowerCase()) !== -1) note = "";
     var tickets = ev.url || (String(ev.description || "").match(/https?:\/\/[^\s)]+/) || [""])[0];
     return {
       date: raw.slice(0, 10),
       time: allDay ? "" : fmtTimeFromISO(raw),
-      venue: loc.venue || title || "TBA",
+      title: title || loc.venue || "TBA",
+      venue: loc.venue,
       city: loc.city,
       tickets: tickets || "",
       note: note

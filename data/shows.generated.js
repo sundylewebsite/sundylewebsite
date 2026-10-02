@@ -3,7 +3,7 @@
    from file:// as well as http://, so the page works opened straight off
    disk with no server and no fetch(). */
 window.SHOWS_FROM_CALENDAR = {
-  "generated": "2026-10-02T17:25:38-04:00",
+  "generated": "2026-10-02T17:50:26-04:00",
   "source": "https://p157-caldav.icloud.com/published/2/MTM5NDEyOTUyMDEzOTQxMqjomdo3_gYCcvIEcdb5xyWaGnKotrQ3-f47gkvXZnEE8v4_GbZYQLUGoniOPEJ6WalRccTL0QiKHJyDBtNDjPA",
   "upcoming": [
     {
@@ -14,6 +14,15 @@ window.SHOWS_FROM_CALENDAR = {
       "tickets": "",
       "note": "",
       "uid": "039CB28C-0293-4B11-B689-8307502CEC4F"
+    },
+    {
+      "date": "2026-10-23",
+      "time": "",
+      "venue": "Ambrosia for Halloween show",
+      "city": "",
+      "tickets": "",
+      "note": "",
+      "uid": "1E4B43F4-A30A-47A8-B020-7175CEF96296"
     }
   ],
   "past": []

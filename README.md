@@ -234,8 +234,9 @@ git push
 
 ## Before launch — please check
 
-- **Lineup** (`index.html`, the `grid--people` block). The six names come from
-  the January 2024 Whatzup article; confirm who is in the band now.
+- **Lineup** (`index.html`, the `grid--people` block) — five players now: Luke
+  Delgado removed. The rest still trace back to the January 2024 Whatzup
+  article, so give them a last look.
 - **Calendar** — wired to the iCloud calendar *"sundyle site"*. It currently
   holds one gig (Oct 3, Monticello Library), which is what the Live section
   shows. iCloud can take a few minutes to update the published feed after you

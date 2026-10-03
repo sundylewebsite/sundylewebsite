@@ -446,6 +446,30 @@ def dedupe(shows):
 
 
 # -------------------------------------------------------------------- main
+def write_if_changed(path, payload):
+    """Write payload unless the only difference is the "generated" stamp.
+
+    The stamp moves on every run, so a plain write dirties the file even when
+    the schedule is identical — and in CI that means a one-line commit and a
+    Pages rebuild every single day, forever. Compare with the stamp neutralised
+    and leave the file (and its honest "last changed" date) alone if the dates
+    themselves are unchanged.
+    """
+    def dates_only(text):
+        return "\n".join(l for l in text.splitlines() if '"generated"' not in l)
+
+    try:
+        with open(path, encoding="utf-8") as fh:
+            existing = fh.read()
+    except OSError:
+        existing = None
+    if existing is not None and dates_only(existing) == dates_only(payload):
+        return False
+    with open(path, "w", encoding="utf-8") as fh:
+        fh.write(payload)
+    return True
+
+
 def main():
     ap = argparse.ArgumentParser(description="Sync a public ICS calendar into data/shows.generated.js")
     ap.add_argument("--config", default=os.path.join(ROOT, "data", "calendar.js"))
@@ -520,10 +544,11 @@ def main():
                + json.dumps(result, indent=2, ensure_ascii=False) + ";\n")
     if args.dry_run:
         print(payload)
-    else:
-        with open(args.out, "w", encoding="utf-8") as fh:
-            fh.write(payload)
+    elif write_if_changed(args.out, payload):
         log("✓ %d upcoming, %d past  →  %s" % (len(upcoming), len(past), args.out))
+    else:
+        log("= %d upcoming, %d past — dates unchanged, left alone"
+            % (len(upcoming), len(past)))
     if not upcoming and not past:
         log("! the calendar parsed but matched no events — check titleContains / the URL")
     return 0

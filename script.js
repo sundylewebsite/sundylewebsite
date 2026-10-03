@@ -21,7 +21,6 @@
   /* ---------------------------------------------------------- social rows --- */
   var ICONS = {
     bandcamp:  '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M0 18.4 6.6 5.6H24l-6.6 12.8z"/></svg>',
-    spotify:   '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 0a12 12 0 1 0 0 24 12 12 0 0 0 0-24zm5.5 17.3a.75.75 0 0 1-1 .25c-2.8-1.7-6.3-2.1-10.4-1.15a.75.75 0 1 1-.33-1.46c4.5-1.03 8.4-.58 11.5 1.32.35.21.46.67.25 1.03zm1.47-3.27a.94.94 0 0 1-1.29.31c-3.2-1.97-8.1-2.54-11.9-1.39a.94.94 0 1 1-.54-1.8c4.33-1.31 9.72-.67 13.4 1.59.44.27.58.85.31 1.29zm.13-3.4C15.3 8.34 9.1 8.13 5.5 9.22a1.12 1.12 0 1 1-.65-2.15C9 5.81 15.85 6.06 20.2 8.63a1.12 1.12 0 0 1-1.1 1.95z"/></svg>',
     appleMusic:'<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M17.4 0H6.6A6.6 6.6 0 0 0 0 6.6v10.8A6.6 6.6 0 0 0 6.6 24h10.8a6.6 6.6 0 0 0 6.6-6.6V6.6A6.6 6.6 0 0 0 17.4 0zm-1.9 17.9a1.3 1.3 0 0 1-1.7.83l-5.1-1.68a1.3 1.3 0 0 1-.9-1.24v-6.6a2 2 0 1 1 1.6 1.96v4.2l4.3 1.42a1.3 1.3 0 0 1 .8 1.11z"/></svg>',
     youtube:   '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M23.5 6.2a3 3 0 0 0-2.1-2.1C19.5 3.6 12 3.6 12 3.6s-7.5 0-9.4.5A3 3 0 0 0 .5 6.2C0 8.1 0 12 0 12s0 3.9.5 5.8a3 3 0 0 0 2.1 2.1c1.9.5 9.4.5 9.4.5s7.5 0 9.4-.5a3 3 0 0 0 2.1-2.1c.5-1.9.5-5.8.5-5.8s0-3.9-.5-5.8zM9.5 15.6V8.4l6.3 3.6z"/></svg>',
     instagram: '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2.2c3.2 0 3.6 0 4.9.07 1.2.05 1.8.25 2.2.4.6.2 1 .5 1.4 1 .5.4.8.8 1 1.4.2.4.4 1 .4 2.2.1 1.3.1 1.7.1 4.9s0 3.6-.1 4.9c0 1.2-.2 1.8-.4 2.2-.2.6-.5 1-1 1.4-.4.5-.8.8-1.4 1-.4.2-1 .4-2.2.4-1.3.1-1.7.1-4.9.1s-3.6 0-4.9-.1c-1.2 0-1.8-.2-2.2-.4-.6-.2-1-.5-1.4-1-.5-.4-.8-.8-1-1.4-.2-.4-.4-1-.4-2.2C2.2 15.6 2.2 15.2 2.2 12s0-3.6.1-4.9c0-1.2.2-1.8.4-2.2.2-.6.5-1 1-1.4.4-.5.8-.8 1.4-1 .4-.2 1-.4 2.2-.4C8.4 2.2 8.8 2.2 12 2.2zm0 3.3a6.5 6.5 0 1 0 0 13 6.5 6.5 0 0 0 0-13zm0 10.7a4.2 4.2 0 1 1 0-8.4 4.2 4.2 0 0 1 0 8.4zm6.7-11a1.5 1.5 0 1 1-3 0 1.5 1.5 0 0 1 3 0z"/></svg>',
@@ -32,8 +31,8 @@
 
   function streamRow(el) {
     if (!el) return;
-    var order = ["bandcamp", "spotify", "appleMusic", "youtube"];
-    var names = { bandcamp: "Bandcamp", spotify: "Spotify", appleMusic: "Apple Music", youtube: "YouTube" };
+    var order = ["bandcamp", "appleMusic", "youtube"];
+    var names = { bandcamp: "Bandcamp", appleMusic: "Apple Music", youtube: "YouTube" };
     el.innerHTML = order.map(function (k) {
       if (!SITE.links[k]) return "";
       return '<li><a href="' + esc(SITE.links[k]) + '" target="_blank" rel="noopener">' +
@@ -43,9 +42,9 @@
 
   function socialRow(el) {
     if (!el) return;
-    var order = ["instagram", "facebook", "tiktok", "youtube", "spotify", "bandcamp"];
+    var order = ["instagram", "facebook", "tiktok", "youtube", "appleMusic", "bandcamp"];
     var names = { instagram: "Instagram", facebook: "Facebook", tiktok: "TikTok",
-                  youtube: "YouTube", spotify: "Spotify", bandcamp: "Bandcamp" };
+                  youtube: "YouTube", appleMusic: "Apple Music", bandcamp: "Bandcamp" };
     el.innerHTML = order.map(function (k) {
       if (!SITE.links[k]) return "";
       var label = names[k] || k;

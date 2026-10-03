@@ -19,7 +19,6 @@ window.SITE = {
   links: {
     bandcamp:   "https://sundyle.bandcamp.com",
     album:      "https://sundyle.bandcamp.com/album/typhoon",
-    spotify:    "https://open.spotify.com/artist/7hxA1xbs2bA2VwawqmHZ6O",
     appleMusic: "https://music.apple.com/us/artist/sun-dyle/1714256367",
     youtube:    "https://www.youtube.com/@SUNDYLE",
     instagram:  "https://www.instagram.com/sun.dyle/",

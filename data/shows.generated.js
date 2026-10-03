@@ -3,7 +3,7 @@
    from file:// as well as http://, so the page works opened straight off
    disk with no server and no fetch(). */
 window.SHOWS_FROM_CALENDAR = {
-  "generated": "2026-10-02T20:19:08-04:00",
+  "generated": "2026-10-02T20:46:03-04:00",
   "source": "https://p157-caldav.icloud.com/published/2/MTM5NDEyOTUyMDEzOTQxMqjomdo3_gYCcvIEcdb5xyWaGnKotrQ3-f47gkvXZnEE8v4_GbZYQLUGoniOPEJ6WalRccTL0QiKHJyDBtNDjPA",
   "upcoming": [
     {
@@ -38,6 +38,17 @@ window.SHOWS_FROM_CALENDAR = {
       "tickets": "",
       "note": "",
       "uid": "97E9CF71-D130-45B0-ADCC-FF488CE28E45"
+    },
+    {
+      "date": "2026-11-06",
+      "time": "10:00 PM",
+      "title": "The Brass Rail w/ Brian Bacon @ Atticus Sorrell",
+      "venue": "The Brass Rail",
+      "street": "1121 Broadway",
+      "city": "Fort Wayne, IN",
+      "tickets": "",
+      "note": "",
+      "uid": "433F040C-7F26-43A2-9153-603C2B837809"
     }
   ],
   "past": []

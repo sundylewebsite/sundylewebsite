@@ -49,10 +49,30 @@ jobs:
           echo "changed=true" >> "$GITHUB_OUTPUT"
 
       # A push made with the default token does NOT trigger a Pages build, so
-      # without this the live site would keep showing the previous dates until
-      # something else happened to rebuild it.
+      # without this the live site would keep showing the previous dates. And a
+      # build that FAILS says nothing anywhere — the site just stays stale — so
+      # ask, check, and ask again rather than assuming.
       - name: Rebuild the site
         if: steps.commit.outputs.changed == 'true'
         env:
           GH_TOKEN: ${{ github.token }}
-        run: gh api --method POST "repos/${{ github.repository }}/pages/builds"
+        run: |
+          set -uo pipefail
+          head=$(git rev-parse HEAD)
+          for attempt in 1 2 3; do
+            gh api --method POST "repos/${GITHUB_REPOSITORY}/pages/builds" >/dev/null
+            for i in $(seq 1 15); do
+              sleep 6
+              out=$(gh api "repos/${GITHUB_REPOSITORY}/pages/builds/latest" \
+                    --jq '"\(.status) \(.commit)"')
+              status=${out%% *}
+              commit=${out##* }
+              [ "${commit:0:7}" = "${head:0:7}" ] || continue
+              case "$status" in
+                built)   echo "site rebuilt for $head"; exit 0 ;;
+                errored) echo "attempt $attempt: build errored, retrying"; break ;;
+              esac
+            done
+          done
+          echo "::error::Pages never reported a successful build for $head — the live site may be showing the previous dates"
+          exit 1

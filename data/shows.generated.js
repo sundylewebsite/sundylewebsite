@@ -3,7 +3,7 @@
    from file:// as well as http://, so the page works opened straight off
    disk with no server and no fetch(). */
 window.SHOWS_FROM_CALENDAR = {
-  "generated": "2026-10-02T20:46:03-04:00",
+  "generated": "2026-10-02T20:53:44-04:00",
   "source": "https://p157-caldav.icloud.com/published/2/MTM5NDEyOTUyMDEzOTQxMqjomdo3_gYCcvIEcdb5xyWaGnKotrQ3-f47gkvXZnEE8v4_GbZYQLUGoniOPEJ6WalRccTL0QiKHJyDBtNDjPA",
   "upcoming": [
     {
@@ -42,7 +42,7 @@ window.SHOWS_FROM_CALENDAR = {
     {
       "date": "2026-11-06",
       "time": "10:00 PM",
-      "title": "The Brass Rail w/ Brian Bacon @ Atticus Sorrell",
+      "title": "The Brass Rail w/ Brian Bacon + Atticus Sorrell",
       "venue": "The Brass Rail",
       "street": "1121 Broadway",
       "city": "Fort Wayne, IN",

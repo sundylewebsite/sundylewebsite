@@ -1,3 +1,6 @@
 .DS_Store
 *.tmp
 assets/photos/**/*.tmp
+
+# working copies kept locally, not part of the site
+assets/photos/gallery/New Folder With Items/

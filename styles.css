@@ -278,7 +278,11 @@ hr { border: 0; border-top: 1px solid var(--line); margin: 0; }
 @media (prefers-reduced-motion: reduce) { .ticker__track { animation: none; } }
 
 /* ------------------------------------------------ social row under hero --- */
-.follow-bar { padding: clamp(1.35rem, 3vw, 1.9rem) 0; border-bottom: 1px solid var(--line); }
+/* No divider: the ticker already closes its own band above, so this is just
+   breathing room, weighted tighter underneath than above. */
+.follow-bar { padding: clamp(1.2rem, 2.6vw, 1.7rem) 0 clamp(.4rem, 1vw, .75rem); }
+/* the section after the icons doesn't need its full top air again */
+.follow-bar + .section { padding-top: clamp(2.25rem, 5vw, 4rem); }
 /* the icons live on the page background here, not the dark footer. The base
    .socials rules appear LATER in this file, so equal specificity would let their
    white glyphs win — hence the doubled class rather than relying on order. */

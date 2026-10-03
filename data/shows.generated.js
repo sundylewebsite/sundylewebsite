@@ -3,7 +3,7 @@
    from file:// as well as http://, so the page works opened straight off
    disk with no server and no fetch(). */
 window.SHOWS_FROM_CALENDAR = {
-  "generated": "2026-10-02T20:53:44-04:00",
+  "generated": "2026-10-02T22:01:45-04:00",
   "source": "https://p157-caldav.icloud.com/published/2/MTM5NDEyOTUyMDEzOTQxMqjomdo3_gYCcvIEcdb5xyWaGnKotrQ3-f47gkvXZnEE8v4_GbZYQLUGoniOPEJ6WalRccTL0QiKHJyDBtNDjPA",
   "upcoming": [
     {
@@ -20,7 +20,7 @@ window.SHOWS_FROM_CALENDAR = {
     {
       "date": "2026-10-23",
       "time": "7:00 PM",
-      "title": "Halloween Show @ Ambrosia Orchard",
+      "title": "Ambrosia Orchard",
       "venue": "Ambrosia Orchard",
       "street": "14025 US Highway 27",
       "city": "Hoagland, IN",

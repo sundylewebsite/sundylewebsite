@@ -277,6 +277,17 @@ hr { border: 0; border-top: 1px solid var(--line); margin: 0; }
 @keyframes ticker { from { transform: translateX(0); } to { transform: translateX(-50%); } }
 @media (prefers-reduced-motion: reduce) { .ticker__track { animation: none; } }
 
+/* ------------------------------------------------ social row under hero --- */
+.follow-bar { padding: clamp(1.35rem, 3vw, 1.9rem) 0; border-bottom: 1px solid var(--line); }
+/* the icons live on the page background here, not the dark footer. The base
+   .socials rules appear LATER in this file, so equal specificity would let their
+   white glyphs win — hence the doubled class rather than relying on order. */
+.socials.socials--paper { justify-content: center; margin: 0; }
+.socials.socials--paper a { border-color: var(--line-2); color: var(--ink-2); }
+.socials.socials--paper a:hover, .socials.socials--paper a:focus-visible {
+  background: var(--amber); border-color: var(--amber); color: #fff;
+}
+
 /* ---------------------------------------------------------- album feat --- */
 .album { display: grid; gap: clamp(1.8rem, 5vw, 3.5rem); grid-template-columns: minmax(0, .95fr) minmax(0, 1.05fr); align-items: start; }
 @media (max-width: 900px) { .album { grid-template-columns: 1fr; } }

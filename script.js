@@ -44,11 +44,14 @@
   function socialRow(el) {
     if (!el) return;
     var order = ["instagram", "facebook", "tiktok", "youtube", "spotify", "bandcamp"];
+    var names = { instagram: "Instagram", facebook: "Facebook", tiktok: "TikTok",
+                  youtube: "YouTube", spotify: "Spotify", bandcamp: "Bandcamp" };
     el.innerHTML = order.map(function (k) {
       if (!SITE.links[k]) return "";
-      var label = k.charAt(0).toUpperCase() + k.slice(1);
+      var label = names[k] || k;
       return '<li><a href="' + esc(SITE.links[k]) + '" target="_blank" rel="noopener" aria-label="' +
-             esc(label) + '" title="' + esc(label) + '">' + ICONS[k] + "</a></li>";
+             esc((SITE.band.name || "SUN.DYLE") + " on " + label) + '" title="' + esc(label) + '">' +
+             ICONS[k] + "</a></li>";
     }).join("");
   }
 
@@ -528,7 +531,7 @@
       }).join("");
     }
     streamRow($("#streams"));
-    socialRow($("#socials"));
+    socialRow($("#socials-top"));
     socialRow($("#socials-footer"));
   }
 

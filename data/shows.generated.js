@@ -3,20 +3,9 @@
    from file:// as well as http://, so the page works opened straight off
    disk with no server and no fetch(). */
 window.SHOWS_FROM_CALENDAR = {
-  "generated": "2026-10-02T22:01:45-04:00",
+  "generated": "2026-10-04T09:40:41-04:00",
   "source": "https://p157-caldav.icloud.com/published/2/MTM5NDEyOTUyMDEzOTQxMqjomdo3_gYCcvIEcdb5xyWaGnKotrQ3-f47gkvXZnEE8v4_GbZYQLUGoniOPEJ6WalRccTL0QiKHJyDBtNDjPA",
   "upcoming": [
-    {
-      "date": "2026-10-03",
-      "time": "3:00 PM",
-      "title": "Monticello Library",
-      "venue": "Monticello-Union Township Public Library",
-      "street": "321 W Broadway St",
-      "city": "Monticello, IN",
-      "tickets": "",
-      "note": "",
-      "uid": "039CB28C-0293-4B11-B689-8307502CEC4F"
-    },
     {
       "date": "2026-10-23",
       "time": "7:00 PM",
@@ -51,5 +40,17 @@ window.SHOWS_FROM_CALENDAR = {
       "uid": "433F040C-7F26-43A2-9153-603C2B837809"
     }
   ],
-  "past": []
+  "past": [
+    {
+      "date": "2026-10-03",
+      "time": "3:00 PM",
+      "title": "Monticello Library",
+      "venue": "Monticello-Union Township Public Library",
+      "street": "321 W Broadway St",
+      "city": "Monticello, IN",
+      "tickets": "",
+      "note": "",
+      "uid": "039CB28C-0293-4B11-B689-8307502CEC4F"
+    }
+  ]
 };

@@ -8,7 +8,7 @@
   "use strict";
 
   var SITE = window.SITE || { band: {}, links: {}, releases: [], videos: [], press: [] };
-  var SHOWS = window.SHOWS || { upcoming: [], past: [] };
+  var SHOWS = window.SHOWS || { upcoming: [] };
   var $ = function (sel, root) { return (root || document).querySelector(sel); };
   var $$ = function (sel, root) { return Array.prototype.slice.call((root || document).querySelectorAll(sel)); };
 
@@ -119,7 +119,7 @@
     if (d.getFullYear() !== new Date().getFullYear()) main += ", " + d.getFullYear();
     return { main: main };
   }
-  function showRow(s, isPast) {
+  function showRow(s) {
     var d = fmtDate(s.date);
     /* Main line = the event title. Sub heading = the street address only — the
        venue name is nearly always in the title already. The time sits in the
@@ -152,10 +152,9 @@
         whereHtml +
         (s.note ? '<span class="show__note">' + esc(s.note) + "</span>" : "") +
       "</span>";
-    /* Past shows have nothing to tap. For an upcoming show with tickets the whole
-       row is clickable via the stretched link on the Tickets button, with the
-       address layered above it — never a nested <a>. */
-    var cta = (!isPast && s.tickets)
+    /* With tickets the whole row is clickable via the stretched link on the
+       Tickets button, with the address layered above it — never a nested <a>. */
+    var cta = s.tickets
       ? '<a class="show__cta btn btn--primary btn--sm" href="' + esc(s.tickets) +
         '" target="_blank" rel="noopener">Tickets</a>'
       : "";
@@ -305,7 +304,7 @@
         .then(function (d) {
           if (!d || !d.items) return null;                 // bad key / private calendar → stay manual
           return { generated: null, live: true, source: "google",
-                   upcoming: d.items.filter(keepEvent).map(googleToShow), past: [] };
+                   upcoming: d.items.filter(keepEvent).map(googleToShow) };
         })
         .catch(function () { return null; });
     }
@@ -313,16 +312,14 @@
   }
 
   function mergedShows() {
-    var man = window.SHOWS || { upcoming: [], past: [] };
+    var man = window.SHOWS || { upcoming: [] };
     var manUp = (man.upcoming || []).filter(function (s) { return s && s.date; });
-    var manPast = (man.past || []).filter(function (s) { return s && s.date; });
-    if (!calData) return { upcoming: manUp, past: manPast };
+    if (!calData) return { upcoming: manUp };
     var hand = {};
-    manUp.concat(manPast).forEach(function (s) { hand[showKey(s)] = 1; });
+    manUp.forEach(function (s) { hand[showKey(s)] = 1; });
     function notOverridden(s) { return !hand[showKey(s)]; }
     return {
-      upcoming: (calData.upcoming || []).filter(notOverridden).concat(manUp),
-      past: (calData.past || []).filter(notOverridden).concat(manPast)
+      upcoming: (calData.upcoming || []).filter(notOverridden).concat(manUp)
     };
   }
 
@@ -350,8 +347,6 @@
 
   function renderShows() {
     var up = $("#shows-upcoming");
-    var pastWrap = $("#shows-past");
-    var pastList = $("#shows-past-list");
     if (!up) return;
     var today = todayISO();
     var data = mergedShows();
@@ -361,11 +356,9 @@
         if (a.date !== b.date) return a.date < b.date ? -1 : 1;
         return String(a.time) < String(b.time) ? -1 : 1;
       });
-    var past = (data.past || []).filter(function (s) { return s.date < today; })
-      .sort(function (a, b) { return a.date > b.date ? -1 : 1; });
 
     if (upcoming.length) {
-      up.innerHTML = upcoming.map(function (s) { return showRow(s, false); }).join("");
+      up.innerHTML = upcoming.map(function (s) { return showRow(s); }).join("");
     } else {
       up.innerHTML =
         '<li><div class="empty">' +
@@ -375,14 +368,6 @@
         "</div></li>";
     }
 
-    if (pastWrap && pastList) {
-      if (past.length) {
-        pastWrap.hidden = false;
-        pastList.innerHTML = past.map(function (s) { return showRow(s, true); }).join("");
-      } else {
-        pastWrap.hidden = true;
-      }
-    }
     renderSyncStamp();
   }
 

@@ -88,13 +88,12 @@ window.SHOWS = {
     { date: "2026-11-14", title: "SUN.DYLE @ The Clyde Theatre", time: "7:30 PM",
       venue: "The Clyde Theatre", street: "1808 Bluffton Rd", city: "Fort Wayne, IN",
       tickets: "https://...", note: "Doors 6:30 — VIP soundcheck upgrade" }
-  ],
-  past: []
+  ]
 };
 ```
 
-`date` must be `YYYY-MM-DD`. Past dates drop into the "Past shows" list by
-themselves once they happen, so nothing needs deleting.
+`date` must be `YYYY-MM-DD`. Only dates today or later appear on the site, so
+a show drops off on its own once it passes — nothing needs deleting.
 
 ### Option A — sync from any calendar (recommended)
 

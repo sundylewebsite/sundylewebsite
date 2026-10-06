@@ -442,7 +442,6 @@ a.show__location:hover, a.show__location:focus-visible {
 }
 .empty h3 { margin-bottom: .35rem; }
 .empty p { color: var(--ink-2); margin-bottom: 1rem; }
-.shows__toggle { margin-top: 1.4rem; }
 .shows__stamp { margin: 1.1rem 0 0; font-size: .82rem; color: var(--ink-3); }
 
 /* --------------------------------------------------------------- about --- */

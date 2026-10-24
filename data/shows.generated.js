@@ -3,20 +3,9 @@
    from file:// as well as http://, so the page works opened straight off
    disk with no server and no fetch(). */
 window.SHOWS_FROM_CALENDAR = {
-  "generated": "2026-10-04T09:40:41-04:00",
+  "generated": "2026-10-24T09:23:11-04:00",
   "source": "https://p157-caldav.icloud.com/published/2/MTM5NDEyOTUyMDEzOTQxMqjomdo3_gYCcvIEcdb5xyWaGnKotrQ3-f47gkvXZnEE8v4_GbZYQLUGoniOPEJ6WalRccTL0QiKHJyDBtNDjPA",
   "upcoming": [
-    {
-      "date": "2026-10-23",
-      "time": "7:00 PM",
-      "title": "Ambrosia Orchard",
-      "venue": "Ambrosia Orchard",
-      "street": "14025 US Highway 27",
-      "city": "Hoagland, IN",
-      "tickets": "",
-      "note": "",
-      "uid": "1E4B43F4-A30A-47A8-B020-7175CEF96296"
-    },
     {
       "date": "2026-10-31",
       "time": "8:00 PM",
@@ -41,6 +30,17 @@ window.SHOWS_FROM_CALENDAR = {
     }
   ],
   "past": [
+    {
+      "date": "2026-10-23",
+      "time": "7:00 PM",
+      "title": "Ambrosia Orchard",
+      "venue": "Ambrosia Orchard",
+      "street": "14025 US Highway 27",
+      "city": "Hoagland, IN",
+      "tickets": "",
+      "note": "",
+      "uid": "1E4B43F4-A30A-47A8-B020-7175CEF96296"
+    },
     {
       "date": "2026-10-03",
       "time": "3:00 PM",

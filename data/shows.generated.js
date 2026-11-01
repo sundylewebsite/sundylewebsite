@@ -3,20 +3,9 @@
    from file:// as well as http://, so the page works opened straight off
    disk with no server and no fetch(). */
 window.SHOWS_FROM_CALENDAR = {
-  "generated": "2026-10-24T09:23:11-04:00",
+  "generated": "2026-11-01T11:06:19-05:00",
   "source": "https://p157-caldav.icloud.com/published/2/MTM5NDEyOTUyMDEzOTQxMqjomdo3_gYCcvIEcdb5xyWaGnKotrQ3-f47gkvXZnEE8v4_GbZYQLUGoniOPEJ6WalRccTL0QiKHJyDBtNDjPA",
   "upcoming": [
-    {
-      "date": "2026-10-31",
-      "time": "8:00 PM",
-      "title": "The Break Room",
-      "venue": "Break Room at Pepper",
-      "street": "1178 Manchester St",
-      "city": "Lexington, KY",
-      "tickets": "",
-      "note": "",
-      "uid": "97E9CF71-D130-45B0-ADCC-FF488CE28E45"
-    },
     {
       "date": "2026-11-06",
       "time": "10:00 PM",
@@ -30,6 +19,17 @@ window.SHOWS_FROM_CALENDAR = {
     }
   ],
   "past": [
+    {
+      "date": "2026-10-31",
+      "time": "8:00 PM",
+      "title": "The Break Room",
+      "venue": "Break Room at Pepper",
+      "street": "1178 Manchester St",
+      "city": "Lexington, KY",
+      "tickets": "",
+      "note": "",
+      "uid": "97E9CF71-D130-45B0-ADCC-FF488CE28E45"
+    },
     {
       "date": "2026-10-23",
       "time": "7:00 PM",

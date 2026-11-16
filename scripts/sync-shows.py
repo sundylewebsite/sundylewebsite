@@ -362,6 +362,13 @@ def split_location(loc, cfg):
     def is_street(s):
         return bool(re.match(r"^\d+\s+\S", s or ""))
 
+    # A Location that is only an address ("1808 Bluffton Rd, Fort Wayne, IN
+    # 46809") has no venue name in it. Read the leading line as the street, not
+    # as the venue, or the row renders with the city alone and the address is
+    # lost. The title still names the venue in that case.
+    if is_street(venue):
+        street, venue = venue, ""
+
     for i, p in enumerate(parts[1:], start=1):
         if not street and is_street(p):
             street = p
@@ -401,7 +408,7 @@ def to_show(ev, cfg):
     loc = split_location(ev.get("location"), cfg)
     venue, street, city = loc["venue"], loc["street"], loc["city"]
     title = base
-    if not venue:                       # no Location field -> read the venue out of the title
+    if not venue and not street:        # no Location field -> read the venue out of the title
         m = re.split(r"\s*@\s*|\s+[–—]\s+|\s+at\s+", base, maxsplit=1, flags=re.I)
         if len(m) == 2 and m[1].strip():
             head, tail = m[0].strip(), m[1].strip()

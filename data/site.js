@@ -62,7 +62,9 @@ window.SITE = {
     { outlet: "Whatzup",  date: "2026-10-28", headline: "Sun.Dyle: \u2018Typhoon\u2019",                        url: "https://whatzup.com/sun-dyle-typhoon/" },
     { outlet: "Whatzup",  date: "2026-10-28", headline: "Sun.Dyle find their groove on new album",              url: "https://whatzup.com/sun-dyle-find-their-groove-on-new-album/" },
     { outlet: "Whatzup",  date: "2026-05-06", headline: "Sun.Dyle\u2019s Celestial Fest is more than music",      url: "https://whatzup.com/sun-dyles-celestial-fest-is-more-than-music/" },
+    { outlet: "Meet the Music", date: "2026-03-02", headline: "SUN.DYLE records a Meet the Music session at WBOI", url: "https://www.facebook.com/meetthemusic/posts/what-a-rush-sundyle-on-fire-recording-a-meet-the-music-session-in-wbois-harriet-/1342155354613921" },
     { outlet: "WBOI",     date: "2025-10-03", headline: "SUN.DYLE closes out Live and Local at The Landing",     url: "https://www.wboi.org/local-music/2025-10-03/sun-dyle-closes-out-live-and-local-at-the-landing-with-a-dreamy-mix-of-jazz-neo-soul-and-r-b" },
+    { outlet: "WBOI",     date: "2025-09-25", headline: "SUN.DYLE radiates jazz, neo-soul and R&B at The Landing", url: "https://www.wboi.org/2025-09-25/sun-dyle-radiates-the-warmth-of-jazz-the-enchanting-vibes-of-neo-soul-and-heartbeats-of-r-b-at-the-landing" },
     { outlet: "Whatzup",  date: "2024-06-05", headline: "Sun.Dyle: \u2018Mirror\u2019",                          url: "https://whatzup.com/sun-dyle-mirror/" },
     { outlet: "Whatzup",  date: "2024-01-03", headline: "Sun.Dyle push city\u2019s neo-soul scene forward",        url: "https://whatzup.com/sun-dyle-push-citys-neo-soul-scene-forward/" }
   ]

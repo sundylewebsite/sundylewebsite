@@ -18,6 +18,33 @@
     });
   }
 
+  /* ------------------------------------------------------------- press ---
+     data/site.js carries the publication date as "YYYY-MM-DD". It is formatted
+     from the string, never through Date(), so no timezone can shift an article
+     back a day; and the array is sorted here so the list is newest-first even
+     if a link is added out of order. */
+  var MONTHS = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
+
+  function pressDate(iso) {
+    var m = /^(\d{4})-(\d{2})-(\d{2})$/.exec(String(iso == null ? "" : iso));
+    if (!m) return String(iso == null ? "" : iso);
+    return MONTHS[Number(m[2]) - 1] + " " + Number(m[3]) + ", " + m[1];
+  }
+
+  function pressList() {
+    var el = $("#press");
+    if (!el) return;
+    var items = (SITE.press || []).slice().sort(function (a, b) {
+      return String(b.date || "").localeCompare(String(a.date || ""));
+    });
+    el.innerHTML = items.map(function (p) {
+      return '<li><a href="' + esc(p.url) + '" target="_blank" rel="noopener">' +
+        '<span class="date">' + esc(pressDate(p.date)) + "</span>" +
+        '<span class="headline">' + esc(p.headline) + "</span>" +
+        '<span class="outlet">' + esc(p.outlet) + "</span></a></li>";
+    }).join("");
+  }
+
   /* ---------------------------------------------------------- social rows --- */
   var ICONS = {
     bandcamp:  '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M0 18.4 6.6 5.6H24l-6.6 12.8z"/></svg>',
@@ -506,14 +533,7 @@
     $$("[data-year]").forEach(function (el) { el.textContent = SITE.band.copyrightYear || new Date().getFullYear(); });
     var mail = $("#info-email");
     if (mail) mail.textContent = SITE.band.bookingEmail || "";
-    var press = $("#press");
-    if (press) {
-      press.innerHTML = (SITE.press || []).map(function (p) {
-        return '<li><a href="' + esc(p.url) + '" target="_blank" rel="noopener">' +
-          '<span class="headline">' + esc(p.headline) + "</span>" +
-          '<span class="outlet">' + esc(p.outlet) + "</span></a></li>";
-      }).join("");
-    }
+    pressList();
     streamRow($("#streams"));
     socialRow($("#socials-top"));
     socialRow($("#socials-footer"));

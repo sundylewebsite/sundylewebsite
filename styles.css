@@ -484,12 +484,25 @@ a.show__location:hover, a.show__location:focus-visible {
 }
 .person__name { font-family: var(--display); font-size: 1.06rem; margin: 0; }
 .person__role { font-size: .85rem; color: var(--ink-2); margin: .05rem 0 0; }
+/* --------------------------------------------------------------- press ---
+   Date column first, then the headline, outlet on the right — so the list
+   reads as a record of coverage, newest first. Phones fold the outlet up
+   beside the headline and drop the date underneath it. */
 .press { list-style: none; margin: 1.6rem 0 0; padding: 0; }
 .press li { border-top: 1px solid var(--line); }
-.press a { display: flex; justify-content: space-between; gap: 1rem; padding: .95rem 0; color: inherit; text-decoration: none; align-items: baseline; }
+.press a {
+  display: grid; grid-template-columns: 104px minmax(0, 1fr) auto;
+  grid-template-areas: "date headline outlet";
+  gap: 1rem; align-items: baseline; padding: .95rem 0;
+  color: inherit; text-decoration: none;
+}
 .press a:hover { text-decoration: none; color: var(--amber-2); }
-.press .outlet { font-size: .78rem; letter-spacing: .1em; text-transform: uppercase; color: var(--ink-3); font-weight: 700; white-space: nowrap; }
-.press .headline { font-weight: 500; }
+.press .date { grid-area: date; font-family: var(--mono); font-size: .82rem; color: var(--amber-2); white-space: nowrap; }
+.press .headline { grid-area: headline; font-weight: 500; }
+.press .outlet { grid-area: outlet; font-size: .78rem; letter-spacing: .1em; text-transform: uppercase; color: var(--ink-3); font-weight: 700; white-space: nowrap; }
+@media (max-width: 560px) {
+  .press a { grid-template-columns: minmax(0, 1fr) auto; grid-template-areas: "headline outlet" "date date"; gap: .2rem .8rem; }
+}
 
 /* ------------------------------------------------------------- gallery --- */
 .gallery__grid { display: grid; gap: clamp(.6rem, 1.6vw, 1rem); grid-template-columns: repeat(auto-fill, minmax(215px, 1fr)); }

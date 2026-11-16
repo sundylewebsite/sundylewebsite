@@ -233,6 +233,19 @@ drop files in `assets/photos/members/` and follow the comment in `index.html`.
 badge and put its art in the hero. Videos take the YouTube id from the video's
 URL (`youtube.com/watch?v=` **this part**).
 
+## Adding a press link
+
+`data/site.js`, the `press` array:
+
+```js
+{ outlet: "Whatzup", date: "2026-10-28", headline: "Sun.Dyle: ‘Typhoon’",
+  url: "https://whatzup.com/sun-dyle-typhoon/" }
+```
+
+`date` is the day the piece was published, written **YYYY-MM-DD**. The site
+prints it as "Oct 28, 2026" and sorts the list newest-first by itself, so a new
+link can go anywhere in the array — no need to keep the order by hand.
+
 ## Light & dark mode
 
 The site follows the system setting — no toggle to click, nothing stored. Every

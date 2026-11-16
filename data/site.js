@@ -54,10 +54,16 @@ window.SITE = {
     { id: "cXKrxcca0a0", title: "SUN.DYLE Live at the Brass Rail",                  kind: "Full Set" }
   ],
 
-  /* -------------------------------------------------------------- press --- */
+  /* -------------------------------------------------------------- press ---
+     Coverage, newest first — the list sorts itself by "date", so you can drop
+     a new link anywhere in this array. "date" is YYYY-MM-DD (the day the piece
+     was published); the site formats it for people. */
   press: [
-    { outlet: "WBOI",    headline: "SUN.DYLE closes out Live and Local at The Landing", url: "https://www.wboi.org/local-music/2025-10-03/sun-dyle-closes-out-live-and-local-at-the-landing-with-a-dreamy-mix-of-jazz-neo-soul-and-r-b" },
-    { outlet: "Whatzup", headline: "Sun.Dyle push city\u2019s neo-soul scene forward",   url: "https://whatzup.com/sun-dyle-push-citys-neo-soul-scene-forward/" },
-    { outlet: "Whatzup", headline: "Sun.Dyle: \u2018Mirror\u2019",                       url: "https://whatzup.com/sun-dyle-mirror/" }
+    { outlet: "Whatzup",  date: "2026-10-28", headline: "Sun.Dyle: \u2018Typhoon\u2019",                        url: "https://whatzup.com/sun-dyle-typhoon/" },
+    { outlet: "Whatzup",  date: "2026-10-28", headline: "Sun.Dyle find their groove on new album",              url: "https://whatzup.com/sun-dyle-find-their-groove-on-new-album/" },
+    { outlet: "Whatzup",  date: "2026-05-06", headline: "Sun.Dyle\u2019s Celestial Fest is more than music",      url: "https://whatzup.com/sun-dyles-celestial-fest-is-more-than-music/" },
+    { outlet: "WBOI",     date: "2025-10-03", headline: "SUN.DYLE closes out Live and Local at The Landing",     url: "https://www.wboi.org/local-music/2025-10-03/sun-dyle-closes-out-live-and-local-at-the-landing-with-a-dreamy-mix-of-jazz-neo-soul-and-r-b" },
+    { outlet: "Whatzup",  date: "2024-06-05", headline: "Sun.Dyle: \u2018Mirror\u2019",                          url: "https://whatzup.com/sun-dyle-mirror/" },
+    { outlet: "Whatzup",  date: "2024-01-03", headline: "Sun.Dyle push city\u2019s neo-soul scene forward",        url: "https://whatzup.com/sun-dyle-push-citys-neo-soul-scene-forward/" }
   ]
 };

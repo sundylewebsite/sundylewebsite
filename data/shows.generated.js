@@ -3,6 +3,18 @@
    from file:// as well as http://, so the page works opened straight off
    disk with no server and no fetch(). */
 window.SHOWS_FROM_CALENDAR = {
-  "generated": "2026-11-16T10:43:11-05:00",
-  "upcoming": []
+  "generated": "2026-11-16T10:55:42-05:00",
+  "upcoming": [
+    {
+      "date": "2026-12-18",
+      "time": "10:00 PM",
+      "title": "The Brass Rail with Chirp",
+      "venue": "The Brass Rail",
+      "street": "1121 Broadway",
+      "city": "Fort Wayne, IN",
+      "tickets": "",
+      "note": "",
+      "uid": "83088B58-EB90-4FA5-A4F7-917A9C0BF165"
+    }
+  ]
 };

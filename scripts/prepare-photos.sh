@@ -41,6 +41,11 @@ convert_one() {                 # convert_one <input> <output>
        --deleteColorManagementProperties \
        "$in" --out "$out" >/dev/null 2>&1 \
     || die "could not convert $in"
+  # Cameras write serial numbers, the photographer's name and often GPS into
+  # every file; those would be public the moment the photo is pushed. Strip the
+  # metadata segments without touching a single pixel.
+  python3 "$ROOT/scripts/strip-metadata.py" "$out" >/dev/null \
+    || printf '  ! could not strip metadata from %s\n' "$out" >&2
 }
 
 case "${2:-}" in

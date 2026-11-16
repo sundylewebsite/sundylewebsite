@@ -35,7 +35,6 @@ ROOT = os.path.dirname(HERE)
 
 WEEKDAYS = {"MO": 0, "TU": 1, "WE": 2, "TH": 3, "FR": 4, "SA": 5, "SU": 6}
 DEFAULT_HORIZON_DAYS = 550             # how far ahead to expand recurring gigs
-MAX_PAST = 12
 
 
 # --------------------------------------------------------------------- utils
@@ -490,11 +489,10 @@ def main():
     if args.ics_file:
         with open(args.ics_file, encoding="utf-8") as fh:
             text = fh.read()
-        source = "file://" + args.ics_file
     else:
         if not url or "PASTE" in url.upper():
-            log("! no calendar URL in %s — add one under \"icsUrl\"" % args.config)
-            log("! (shows stay as they are in data/shows.js)")
+            log("! no calendar URL — set SUN_DYLE_ICS_URL in the environment")
+            log("! (the GitHub Action reads it from the repo secret)")
             return 0
         fetch = url.replace("webcal://", "https://", 1)
         req = urllib.request.Request(fetch, headers={
@@ -503,7 +501,6 @@ def main():
         })
         with urllib.request.urlopen(req, timeout=45) as resp:
             text = resp.read().decode("utf-8", "replace")
-        source = fetch
 
     if "BEGIN:VCALENDAR" not in text:
         log("! that did not look like an ICS calendar (no BEGIN:VCALENDAR)")
@@ -527,14 +524,13 @@ def main():
 
     today = local_now.date().isoformat()
     upcoming = [s for s in shows if s["date"] >= today]
-    past = sorted([s for s in shows if s["date"] < today], key=lambda s: s["date"], reverse=True)
-    past = past[: int(cfg.get("keepPastCount", MAX_PAST))]
 
+    # "source" is deliberately NOT written: it was the calendar's private
+    # published URL, and this file is served to every visitor (and sits in a
+    # public repo). The page never read it.
     result = {
         "generated": local_now.isoformat(timespec="seconds"),
-        "source": source,
         "upcoming": upcoming,
-        "past": past,
     }
     payload = ("/* Written by scripts/sync-shows.py from data/calendar.js — do not edit.\n"
                "   A .js file rather than .json on purpose: a plain <script> tag loads\n"
@@ -545,11 +541,10 @@ def main():
     if args.dry_run:
         print(payload)
     elif write_if_changed(args.out, payload):
-        log("✓ %d upcoming, %d past  →  %s" % (len(upcoming), len(past), args.out))
+        log("✓ %d upcoming  →  %s" % (len(upcoming), args.out))
     else:
-        log("= %d upcoming, %d past — dates unchanged, left alone"
-            % (len(upcoming), len(past)))
-    if not upcoming and not past:
+        log("= %d upcoming — dates unchanged, left alone" % len(upcoming))
+    if not shows:
         log("! the calendar parsed but matched no events — check titleContains / the URL")
     return 0
 

@@ -2,10 +2,10 @@
 """
 SUN.DYLE — local preview server.
 
-    scripts/serve.py              # http://0.0.0.0:8091 — reachable from any
+    scripts/serve.py              # http://0.0.0.0:8095 — reachable from any
                                   # device on the home network
     scripts/serve.py 9000         # a different port
-    scripts/serve.py --port 8091 --host 127.0.0.1
+    scripts/serve.py --port 8095 --host 127.0.0.1
 
 Same idea as `python3 -m http.server`, with two differences that matter while
 you are editing:
@@ -56,7 +56,7 @@ class Handler(http.server.SimpleHTTPRequestHandler):
 
 def main():
     ap = argparse.ArgumentParser(description="Preview the SUN.DYLE site locally")
-    ap.add_argument("port", nargs="?", type=int, default=8091)
+    ap.add_argument("port", nargs="?", type=int, default=8095)
     ap.add_argument("--host", default="0.0.0.0")
     args = ap.parse_args()
 

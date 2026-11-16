@@ -10,7 +10,15 @@
 window.CALENDAR = {
   "mode": "ics",
 
-  "icsUrl": "webcal://p157-caldav.icloud.com/published/2/MTM5NDEyOTUyMDEzOTQxMqjomdo3_gYCcvIEcdb5xyWaGnKotrQ3-f47gkvXZnEE8v4_GbZYQLUGoniOPEJ6WalRccTL0QiKHJyDBtNDjPA",
+  /* The published iCloud calendar's address is NOT in this file any more — it
+     was readable by anyone who opened this page, and it unlocks the whole
+     calendar, notes included. It is passed in instead:
+       * GitHub Action — the repo secret SUN_DYLE_ICS_URL
+       * on this Mac   — export SUN_DYLE_ICS_URL='webcal://…' before syncing,
+                         or pass --ics-url webcal://… to sync-shows.py
+     The page itself never needs it: it reads data/shows.generated.js. */
+  "icsUrl": "",
+
   "timezone": "America/Indiana/Indianapolis",
   "defaultCity": "",
 
@@ -27,7 +35,6 @@ window.CALENDAR = {
 
   "horizonDays": 550,
   "pastLookbackDays": 400,
-  "keepPastCount": 12,
 
   "googleApiKey": "",
   "googleCalendarId": "",
